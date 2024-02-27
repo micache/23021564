@@ -3,3 +3,20 @@
 	<SDL.h>
 	<iostream>
 
+1709055074 source:d:\project\game\23021564\main.cpp
+	<SDL.h>
+	"graphics.h"
+	<iostream>
+
+1709054397 d:\project\game\23021564\structs.h
+	<SDL.h>
+	"defs.h"
+	<iostream>
+
+1709052357 d:\project\game\23021564\defs.h
+
+1709055064 d:\project\game\23021564\graphics.h
+	<SDL.h>
+	"defs.h"
+	<iostream>
+

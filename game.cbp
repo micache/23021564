@@ -31,7 +31,12 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="defs.h" />
 		<Unit filename="game.cbp" />
+		<Unit filename="graphics.h" />
+		<Unit filename="input.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="structs.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
