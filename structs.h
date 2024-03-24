@@ -7,6 +7,20 @@
 
 using namespace std;
 
+struct MapTile
+{
+    float points[6];
+
+    MapTile (float _points*)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            points[i] = _points[i];
+        }
+    }
+
+};
+
 struct Entity {
 
 };

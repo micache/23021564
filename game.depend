@@ -3,20 +3,24 @@
 	<SDL.h>
 	<iostream>
 
-1709055074 source:d:\project\game\23021564\main.cpp
+1711212079 source:d:\project\game\23021564\main.cpp
+	<iostream>
 	<SDL.h>
 	"graphics.h"
-	<iostream>
 
 1709054397 d:\project\game\23021564\structs.h
 	<SDL.h>
 	"defs.h"
 	<iostream>
 
-1709052357 d:\project\game\23021564\defs.h
+1711209900 d:\project\game\23021564\defs.h
 
-1709055064 d:\project\game\23021564\graphics.h
+1711212199 d:\project\game\23021564\graphics.h
 	<SDL.h>
 	"defs.h"
 	<iostream>
+	<bits/stdc++.h>
+
+1709055129 d:\project\game\23021564\input.h
+	<SDL.h>
 

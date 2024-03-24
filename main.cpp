@@ -1,26 +1,21 @@
-#ifndef _MAIN__H
-#define _MAIN__H
+#include<iostream>
 #include <SDL.h>
 #include "graphics.h"
-#include "input.h"
-#include <iostream>
 
-int main(int argv, char** args)
-{
-    Graphics graphic;
-    graphic.initSDL();
+using namespace std;
 
-    Input input;
-    while (1)
-    {
-        graphic.prepareScene();
 
-        input.doInput();
 
-        graphic.presentScene();
+int main(int argc, char* argv[]) {
+    //srand(time(0));
 
-        SDL_Delay(16);
-    }
+    Graphics graphics;
+    graphics.init();
+
+    graphics.prepareScene();
+    graphics.presentScene();
+    SDL_Delay(1000000);
+
+    graphics.quit();
     return 0;
 }
-#endif // _LOGIC__H

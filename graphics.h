@@ -3,7 +3,8 @@
 
 #include <SDL.h>
 #include "defs.h"
-#include<iostream>
+#include <iostream>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ struct Graphics
     SDL_Renderer *renderer;
 	SDL_Window *window;
 
-	void initSDL()
+	void init()
     {
         int rendererFlags, windowFlags;
 
@@ -45,15 +46,60 @@ struct Graphics
         }
     }
 
+    void drawHexagon(SDL_Renderer* renderer, float centerX, float centerY)
+    {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
+
+        double angle = 0;
+        for (int i = 0; i < 6; ++i)
+        {
+            float x1 = centerX + MAP_HEX_SIZE * cos(angle);
+            float y1 = centerY + MAP_HEX_SIZE * sin(angle);
+            angle += MAP_HEX_ANGLE;
+
+            float x2 = centerX + MAP_HEX_SIZE * cos(angle);
+            float y2 = centerY + MAP_HEX_SIZE * sin(angle);
+
+            SDL_RenderDrawLineF(renderer, x1, y1, x2, y2);
+        }
+    }
+
     void prepareScene()
     {
-        SDL_SetRenderDrawColor(renderer, 96, 128, 255, 255);
+        // Clear the screen
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+
+        //drawHexagon(renderer, 200, 200);
+
+
+        //Draw hexagon
+        bool fl = 0;
+        int cnt = 0;
+        for (float x = 0; x < SCREEN_WIDTH; x += MAP_HEX_DISTANCE_HORIZ)
+        {
+            for (float y = (fl ? MAP_HEX_DISTANCE_VERT / 2 : 0); y < SCREEN_HEIGHT; y += MAP_HEX_DISTANCE_VERT)
+            {
+                drawHexagon(renderer, x, y);
+            }
+            fl = !fl;
+        }
+
+        //
     }
 
     void presentScene()
     {
         SDL_RenderPresent(renderer);
+    }
+
+    void quit()
+    {
+        //IMG_Quit();
+
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
     }
 };
 
