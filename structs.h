@@ -9,16 +9,13 @@ using namespace std;
 
 struct MapTile
 {
-    float points[6];
+    pair<float, float> points[6];
+    int colorId;
 
-    MapTile (float _points*)
+    MapTile ()
     {
-        for (int i = 0; i < 6; i++)
-        {
-            points[i] = _points[i];
-        }
+        colorId = MAP_COLOR_GRASS;
     }
-
 };
 
 struct Entity {

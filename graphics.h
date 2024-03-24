@@ -4,9 +4,33 @@
 #include <SDL.h>
 #include "defs.h"
 #include <iostream>
-#include <bits/stdc++.h>
+#include <cmath>
+#include <algorithm>
 
-using namespace std;
+void colorTriangle(SDL_Renderer *renderer, float x1, float y1, float x2, float y2, float x3, float y3)
+{
+    float minX = std::min({x1, x2, x3});
+    float maxX = std::max({x1, x2, x3});
+    float minY = std::min({y1, y2, y3});
+    float maxY = std::max({y1, y2, y3});
+
+    // Fill the triangle by filling rectangles within the bounding box
+    for (float y = minY; y <= maxY; ++y)
+    {
+        for (float x = minX; x <= maxX; ++x)
+        {
+            // Check if the pofloat (x, y) is inside the triangle
+            float b1 = (x2 - x1) * (y - y1) - (x - x1) * (y2 - y1);
+            float b2 = (x3 - x2) * (y - y2) - (x - x2) * (y3 - y2);
+            float b3 = (x1 - x3) * (y - y3) - (x - x3) * (y1 - y3);
+
+            if ((b1 >= 0 && b2 >= 0 && b3 >= 0) || (b1 <= 0 && b2 <= 0 && b3 <= 0))
+            {
+                SDL_RenderDrawPoint(renderer, x, y);
+            }
+        }
+    }
+}
 
 struct Graphics
 {
@@ -23,7 +47,7 @@ struct Graphics
 
         if (SDL_Init(SDL_INIT_VIDEO) < 0)
         {
-            cout << "Couldn't initialize SDL: " << SDL_GetError();
+            std::cout << "Couldn't initialize SDL: " << SDL_GetError();
             exit(1);
         }
 
@@ -31,7 +55,7 @@ struct Graphics
 
         if (!window)
         {
-            cout << "Failed to open window: " << SDL_GetError();
+            std::cout << "Failed to open window: " << SDL_GetError();
             exit(1);
         }
 
@@ -41,51 +65,17 @@ struct Graphics
 
         if (!renderer)
         {
-            cout << "Failed to create renderer: " << SDL_GetError();
+            std::cout << "Failed to create renderer: " << SDL_GetError();
             exit(1);
-        }
-    }
-
-    void drawHexagon(SDL_Renderer* renderer, float centerX, float centerY)
-    {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
-
-        double angle = 0;
-        for (int i = 0; i < 6; ++i)
-        {
-            float x1 = centerX + MAP_HEX_SIZE * cos(angle);
-            float y1 = centerY + MAP_HEX_SIZE * sin(angle);
-            angle += MAP_HEX_ANGLE;
-
-            float x2 = centerX + MAP_HEX_SIZE * cos(angle);
-            float y2 = centerY + MAP_HEX_SIZE * sin(angle);
-
-            SDL_RenderDrawLineF(renderer, x1, y1, x2, y2);
         }
     }
 
     void prepareScene()
     {
-        // Clear the screen
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        // Clear the screen with grass color
+        auto color = MAP_TILE_COLOR[1];
+        SDL_SetRenderDrawColor(renderer, std::get<0>(color), std::get<1>(color), std::get<2>(color), 0);
         SDL_RenderClear(renderer);
-
-        //drawHexagon(renderer, 200, 200);
-
-
-        //Draw hexagon
-        bool fl = 0;
-        int cnt = 0;
-        for (float x = 0; x < SCREEN_WIDTH; x += MAP_HEX_DISTANCE_HORIZ)
-        {
-            for (float y = (fl ? MAP_HEX_DISTANCE_VERT / 2 : 0); y < SCREEN_HEIGHT; y += MAP_HEX_DISTANCE_VERT)
-            {
-                drawHexagon(renderer, x, y);
-            }
-            fl = !fl;
-        }
-
-        //
     }
 
     void presentScene()
