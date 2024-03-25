@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
     graphics.init();
 
     Game game;
-    game.initMap();
+    game.init(graphics);
 
     graphics.prepareScene();
     game.draw(graphics);

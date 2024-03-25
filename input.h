@@ -5,7 +5,7 @@
 
 struct Input
 {
-    void doInput(void)
+    void get()
     {
         SDL_Event event;
 

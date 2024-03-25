@@ -16,6 +16,7 @@ mt19937 rd(chrono::steady_clock::now().time_since_epoch().count());
 struct Game
 {
     vector<MapTile*> allMapTile;
+    vector<Unit*> allUnits;
 
     void genHexagon(float centerX, float centerY)
     {
@@ -28,12 +29,14 @@ struct Game
             angle += MAP_HEX_ANGLE;
             cur->points[i] = {x1, y1};
         }
+        cur->center = {centerX, centerY};
         allMapTile.push_back(cur);
     }
 
     void initMap()
     {
         srand(time(NULL));
+        allMapTile.clear();
 
         ///Gen Hexagon
         bool fl = 0;
@@ -66,9 +69,25 @@ struct Game
         }
     }
 
+    void initUnits(Graphics& graphics)
+    {
+        allUnits.clear();
+
+        Unit* center1 = new Unit(0, allMapTile[144], 0, graphics);
+        allUnits.push_back(center1);
+
+        Unit* center2 = new Unit(0, allMapTile[8], 1, graphics);
+        allUnits.push_back(center2);
+    }
+
+    void init(Graphics& graphics)
+    {
+        initMap();
+        initUnits(graphics);
+    }
+
     void drawMap(SDL_Renderer* renderer)
     {
-
         //Draw lines of hex
         for (const MapTile* hex : allMapTile)
         {
@@ -104,9 +123,19 @@ struct Game
         }
     }
 
+    void drawUnits(Graphics& graphics)
+    {
+        for (auto& unit : allUnits)
+        {
+            float cenX = unit->curPos->center.first, cenY = unit->curPos->center.second;
+            graphics.renderTexture(unit->texture, cenX - TEXTURE_SIZE / 2, cenY - TEXTURE_SIZE / 2, graphics.renderer);
+        }
+    }
+
     void draw(Graphics& graphics)
     {
         drawMap(graphics.renderer);
+        drawUnits(graphics);
     }
 };
 

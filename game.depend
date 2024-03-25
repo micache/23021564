@@ -3,22 +3,26 @@
 	<SDL.h>
 	<iostream>
 
-1711252592 source:d:\project\game\23021564\main.cpp
+1711358196 source:d:\project\game\23021564\main.cpp
 	<iostream>
 	<SDL.h>
 	"graphics.h"
 	"logic.h"
 
-1711266149 d:\project\game\23021564\structs.h
+1711360463 d:\project\game\23021564\structs.h
 	<SDL.h>
+	<SDL_image.h>
 	"defs.h"
 	<iostream>
+	<string>
 
-1711255456 d:\project\game\23021564\defs.h
+1711360130 d:\project\game\23021564\defs.h
 	<tuple>
+	<string>
 
-1711256827 d:\project\game\23021564\graphics.h
+1711360196 d:\project\game\23021564\graphics.h
 	<SDL.h>
+	<SDL_image.h>
 	"defs.h"
 	<iostream>
 	<cmath>
@@ -27,7 +31,7 @@
 1709055129 d:\project\game\23021564\input.h
 	<SDL.h>
 
-1711266174 d:\project\game\23021564\logic.h
+1711360397 d:\project\game\23021564\logic.h
 	<vector>
 	<ctime>
 	<chrono>

@@ -2,6 +2,7 @@
 #define _GRAPHICS__H
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include "defs.h"
 #include <iostream>
 #include <cmath>
@@ -15,9 +16,9 @@ void colorTriangle(SDL_Renderer *renderer, float x1, float y1, float x2, float y
     float maxY = std::max({y1, y2, y3});
 
     // Fill the triangle by filling rectangles within the bounding box
-    for (float y = minY; y <= maxY; ++y)
+    for (float y = minY; y <= maxY; y += 0.5)
     {
-        for (float x = minX; x <= maxX; ++x)
+        for (float x = minX; x <= maxX; x += 0.5)
         {
             // Check if the pofloat (x, y) is inside the triangle
             float b1 = (x2 - x1) * (y - y1) - (x - x1) * (y2 - y1);
@@ -68,7 +69,33 @@ struct Graphics
             std::cout << "Failed to create renderer: " << SDL_GetError();
             exit(1);
         }
+
+        if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG))
+            std::cout << "SDL_image error:" << IMG_GetError();
     }
+
+    SDL_Texture *loadTexture(const char *filename)
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Loading %s", filename);
+
+        SDL_Texture *texture = IMG_LoadTexture(renderer, filename);
+        if (texture == NULL)
+            SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Load texture %s", IMG_GetError());
+
+        return texture;
+    }
+
+    void renderTexture(SDL_Texture *texture, int x, int y, SDL_Renderer* renderer)
+    {
+        SDL_Rect dest;
+        dest.x = x;
+        dest.y = y;
+        dest.w = TEXTURE_SIZE;
+        dest.h = TEXTURE_SIZE;
+
+        SDL_RenderCopy(renderer, texture, NULL, &dest);
+    }
+
 
     void prepareScene()
     {
@@ -85,8 +112,7 @@ struct Graphics
 
     void quit()
     {
-        //IMG_Quit();
-
+        IMG_Quit();
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_Quit();
