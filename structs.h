@@ -36,7 +36,7 @@ struct Unit
         steps = CLASS_STEP[id];
         curPos = _curPos;
         player = side;
-        string filePath = "assets/" + name + "_icon_" + std::to_string(player) + ".jpg";
+        string filePath = "assets/" + name + "_icon_" + std::to_string(player) + ".png";
         texture = graphics.loadTexture(filePath.c_str());
     }
 };

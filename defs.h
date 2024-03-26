@@ -26,6 +26,6 @@ const int CLASS_DAME[NUM_CLASS] = {10};
 const int CLASS_COST[NUM_CLASS] = {0};
 const int CLASS_STEP[NUM_CLASS] = {0};
 
-#define TEXTURE_SIZE 256
+#define TEXTURE_SIZE 64
 
 #endif

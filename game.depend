@@ -9,14 +9,14 @@
 	"graphics.h"
 	"logic.h"
 
-1711360463 d:\project\game\23021564\structs.h
+1711423306 d:\project\game\23021564\structs.h
 	<SDL.h>
 	<SDL_image.h>
 	"defs.h"
 	<iostream>
 	<string>
 
-1711360130 d:\project\game\23021564\defs.h
+1711422807 d:\project\game\23021564\defs.h
 	<tuple>
 	<string>
 
@@ -31,7 +31,7 @@
 1709055129 d:\project\game\23021564\input.h
 	<SDL.h>
 
-1711360397 d:\project\game\23021564\logic.h
+1711427235 d:\project\game\23021564\logic.h
 	<vector>
 	<ctime>
 	<chrono>

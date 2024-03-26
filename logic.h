@@ -18,6 +18,11 @@ struct Game
     vector<MapTile*> allMapTile;
     vector<Unit*> allUnits;
 
+    Unit* unitClicked(int x, int y)
+    {
+
+    }
+
     void genHexagon(float centerX, float centerY)
     {
         MapTile* cur = new MapTile();
@@ -73,10 +78,10 @@ struct Game
     {
         allUnits.clear();
 
-        Unit* center1 = new Unit(0, allMapTile[144], 0, graphics);
+        Unit* center1 = new Unit(0, allMapTile[16], 0, graphics);
         allUnits.push_back(center1);
 
-        Unit* center2 = new Unit(0, allMapTile[8], 1, graphics);
+        Unit* center2 = new Unit(0, allMapTile[137], 1, graphics);
         allUnits.push_back(center2);
     }
 

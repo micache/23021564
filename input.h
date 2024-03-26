@@ -2,24 +2,25 @@
 #define _INPUT__H
 
 #include <SDL.h>
+#include <logic.h>
 
 struct Input
 {
-    void get()
+    pair<int, int> getMousePos()
     {
         SDL_Event event;
+        SDL_PollEvent(&event);
 
-        while (SDL_PollEvent(&event))
+        switch (event.type)
         {
-            switch (event.type)
-            {
-                case SDL_QUIT:
-                    exit(0);
-                    break;
+            case SDL_QUIT:
+                exit(0);
+                break;
 
-                default:
-                    break;
-            }
+            case SDL_MOUSEBUTTONDOWN:
+                int x, y;
+                SDL_GetMouseState(&x, &y)
+                //return unitClicked(x, y);
         }
     }
 };
