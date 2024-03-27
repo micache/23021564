@@ -5,11 +5,15 @@
 #include <ctime>
 #include <chrono>
 #include <random>
+
 #include <SDL.h>
 #include <SDL_image.h>
+
 #include "defs.h"
 #include "graphics.h"
 #include "structs.h"
+#include "utils.h"
+#include "input.h"
 
 mt19937 rd(chrono::steady_clock::now().time_since_epoch().count());
 
@@ -17,11 +21,6 @@ struct Game
 {
     vector<MapTile*> allMapTile;
     vector<Unit*> allUnits;
-
-    Unit* unitClicked(int x, int y)
-    {
-
-    }
 
     void genHexagon(float centerX, float centerY)
     {
@@ -141,6 +140,48 @@ struct Game
     {
         drawMap(graphics.renderer);
         drawUnits(graphics);
+    }
+
+    Unit* unitClicked(int x, int y)
+    {
+        for (auto& unit : allUnits)
+        {
+            MapTile* pos = unit->curPos;
+            for (int i = 0; i < 6; i++)
+            {
+                if (isInTriangle(x, y, pos->center.first, pos->center.second, pos->points[i].first, pos->points[i].second, pos->points[(i + 1) % 6].first, pos->points[(i + 1) % 6].second))
+                {
+                    cerr << "Clicked on " << unit->name << '\n';
+                    return unit;
+                }
+            }
+        }
+        return NULL;
+    }
+
+    void showClassMenu()
+    {
+
+    }
+
+    void playTurn(bool turn)
+    {
+        Unit* unit;
+        Input input;
+        do
+        {
+            pair<int, int> mousePos = input.getMousePos();
+            unit = unitClicked(mousePos.first, mousePos.second);
+        } while (unit == NULL);
+
+        if (unit->name == "center")
+        {
+            showClassMenu();
+
+        } else
+        {
+
+        }
     }
 };
 

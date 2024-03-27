@@ -19,12 +19,12 @@ const std::tuple<int, int, int> MAP_TILE_COLOR[3] = {{55, 105, 33}, {81, 197, 30
 #define MAP_COLOR_GRASS 1
 #define MAP_COLOR_WATER 2
 
-#define NUM_CLASS 1
-const std::string CLASS_NAME[NUM_CLASS] = {"center"};
-const int CLASS_HP[NUM_CLASS] = {100};
-const int CLASS_DAME[NUM_CLASS] = {10};
-const int CLASS_COST[NUM_CLASS] = {0};
-const int CLASS_STEP[NUM_CLASS] = {0};
+#define NUM_CLASS 2
+const std::string CLASS_NAME[NUM_CLASS] = {"center", "archer"};
+const int CLASS_HP[NUM_CLASS] = {100, 40};
+const int CLASS_DAME[NUM_CLASS] = {10, 7};
+const int CLASS_COST[NUM_CLASS] = {0, 2};
+const int CLASS_STEP[NUM_CLASS] = {0, 2};
 
 #define TEXTURE_SIZE 64
 

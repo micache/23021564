@@ -20,18 +20,19 @@
 	<tuple>
 	<string>
 
-1711360196 d:\project\game\23021564\graphics.h
+1711554134 d:\project\game\23021564\graphics.h
 	<SDL.h>
 	<SDL_image.h>
-	"defs.h"
 	<iostream>
 	<cmath>
 	<algorithm>
+	"defs.h"
+	"utils.h"
 
 1709055129 d:\project\game\23021564\input.h
 	<SDL.h>
 
-1711427235 d:\project\game\23021564\logic.h
+1711554408 d:\project\game\23021564\logic.h
 	<vector>
 	<ctime>
 	<chrono>
@@ -41,4 +42,7 @@
 	"defs.h"
 	"graphics.h"
 	"structs.h"
+	"utils.h"
+
+1711554067 d:\project\game\23021564\utils.h
 

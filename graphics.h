@@ -3,10 +3,14 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
-#include "defs.h"
+
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <string>
+
+#include "defs.h"
+#include "utils.h"
 
 void colorTriangle(SDL_Renderer *renderer, float x1, float y1, float x2, float y2, float x3, float y3)
 {
@@ -21,11 +25,7 @@ void colorTriangle(SDL_Renderer *renderer, float x1, float y1, float x2, float y
         for (float x = minX; x <= maxX; x += 0.5)
         {
             // Check if the pofloat (x, y) is inside the triangle
-            float b1 = (x2 - x1) * (y - y1) - (x - x1) * (y2 - y1);
-            float b2 = (x3 - x2) * (y - y2) - (x - x2) * (y3 - y2);
-            float b3 = (x1 - x3) * (y - y3) - (x - x3) * (y1 - y3);
-
-            if ((b1 >= 0 && b2 >= 0 && b3 >= 0) || (b1 <= 0 && b2 <= 0 && b3 <= 0))
+            if (isInTriangle(x, y, x1, y1, x2, y2, x3, y3))
             {
                 SDL_RenderDrawPoint(renderer, x, y);
             }
@@ -38,13 +38,11 @@ struct Graphics
     SDL_Renderer *renderer;
 	SDL_Window *window;
 
-	void init()
+	void init(std::string name, int x, int y, int w, int h, int flag)
     {
-        int rendererFlags, windowFlags;
+        int rendererFlags;
 
         rendererFlags = SDL_RENDERER_ACCELERATED;
-
-        windowFlags = 0;
 
         if (SDL_Init(SDL_INIT_VIDEO) < 0)
         {
@@ -52,7 +50,7 @@ struct Graphics
             exit(1);
         }
 
-        window = SDL_CreateWindow("aoe 01", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, windowFlags);
+        window = SDL_CreateWindow(name.c_str(), x, y, w, h, flag);
 
         if (!window)
         {
