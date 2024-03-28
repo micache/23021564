@@ -83,13 +83,13 @@ struct Graphics
         return texture;
     }
 
-    void renderTexture(SDL_Texture *texture, int x, int y, SDL_Renderer* renderer)
+    void renderTexture(SDL_Texture *texture, int x, int y, int w, int h, SDL_Renderer* renderer)
     {
         SDL_Rect dest;
         dest.x = x;
         dest.y = y;
-        dest.w = TEXTURE_SIZE;
-        dest.h = TEXTURE_SIZE;
+        dest.w = w;
+        dest.h = h;
 
         SDL_RenderCopy(renderer, texture, NULL, &dest);
     }
@@ -105,7 +105,7 @@ struct Graphics
 
     void presentScene()
     {
-        SDL_RenderPresent( renderer);
+        SDL_RenderPresent(renderer);
     }
 
     void quit()

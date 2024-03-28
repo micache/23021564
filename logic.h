@@ -132,7 +132,7 @@ struct Game
         for (auto& unit : allUnits)
         {
             float cenX = unit->curPos->center.first, cenY = unit->curPos->center.second;
-            graphics.renderTexture(unit->texture, cenX - TEXTURE_SIZE / 2, cenY - TEXTURE_SIZE / 2, graphics.renderer);
+            graphics.renderTexture(unit->texture, cenX - ON_MAP_TEXTURE_SIZE / 2, cenY - ON_MAP_TEXTURE_SIZE / 2, ON_MAP_TEXTURE_SIZE, ON_MAP_TEXTURE_SIZE, graphics.renderer);
         }
     }
 
@@ -159,12 +159,21 @@ struct Game
         return NULL;
     }
 
-    void showClassMenu()
+    void showClassMenu(bool turn)
     {
         Graphics graphics;
         graphics.init("Class Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, MENU_SCREEN_WIDTH, MENU_SCREEN_HEIGHT, SDL_WINDOW_INPUT_FOCUS);
 
+        int x = 25, y = 50;
+        for (int i = 1; i < NUM_CLASS; i++)
+        {
+            string filePath = "assets/" + CLASS_NAME[i] + "_icon_" + std::to_string(turn) + ".png";
+            SDL_Texture *texture = graphics.loadTexture(filePath.c_str());
+            graphics.renderTexture(texture, x, y, ON_MENU_TEXTURE_SIZE, ON_MENU_TEXTURE_SIZE, graphics.renderer);
 
+            x += 50 + ON_MENU_TEXTURE_SIZE;
+        }
+        graphics.presentScene();
 
         Input input;
         while (1)
@@ -172,6 +181,7 @@ struct Game
             pair<int, int> mousePos = input.getMousePos();
             cerr << mousePos.first << ' ' << mousePos.second << '\n';
         }
+
     }
 
     void playTurn(bool turn)
@@ -182,12 +192,12 @@ struct Game
         {
             pair<int, int> mousePos = input.getMousePos();
             unit = unitClicked(mousePos.first, mousePos.second);
-        } while (unit == NULL);
+        }while (unit == NULL || unit->player != turn);
 
         if (unit->name == "center")
         {
             //cerr << "Clicked" << '\n';
-            showClassMenu();
+            showClassMenu(turn);
 
         } else
         {
