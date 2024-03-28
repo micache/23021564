@@ -1,6 +1,8 @@
 # depslib dependency file v1.0
-1708497009 source:d:\cplusplus\game\main.cpp
+1711090891 source:d:\cplusplus\game\main.cpp
 	<SDL.h>
+	"graphics.h"
+	"input.h"
 	<iostream>
 
 1709055074 source:d:\project\game\23021564\main.cpp
@@ -19,4 +21,14 @@
 	<SDL.h>
 	"defs.h"
 	<iostream>
+
+1711090891 d:\cplusplus\game\graphics.h
+	<SDL.h>
+	"defs.h"
+	<iostream>
+
+1711090891 d:\cplusplus\game\defs.h
+
+1711090891 d:\cplusplus\game\input.h
+	<SDL.h>
 

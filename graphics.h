@@ -53,7 +53,7 @@ struct Graphics
 
     void presentScene()
     {
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent( renderer);
     }
 };
 
