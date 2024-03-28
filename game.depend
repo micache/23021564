@@ -1,34 +1,89 @@
 # depslib dependency file v1.0
-1711090891 source:d:\cplusplus\game\main.cpp
+1711614935 source:d:\cplusplus\game\main.cpp
+	<iostream>
 	<SDL.h>
 	"graphics.h"
+	"logic.h"
+
+1711358196 source:d:\project\game\23021564\main.cpp
+	<iostream>
+	<SDL.h>
+	"graphics.h"
+	"logic.h"
+
+1711423306 d:\project\game\23021564\structs.h
+	<SDL.h>
+	<SDL_image.h>
+	"defs.h"
+	<iostream>
+	<string>
+
+1711422807 d:\project\game\23021564\defs.h
+	<tuple>
+	<string>
+
+1711554134 d:\project\game\23021564\graphics.h
+	<SDL.h>
+	<SDL_image.h>
+	<iostream>
+	<cmath>
+	<algorithm>
+	"defs.h"
+	"utils.h"
+
+1709055129 d:\project\game\23021564\input.h
+	<SDL.h>
+
+1711554408 d:\project\game\23021564\logic.h
+	<vector>
+	<ctime>
+	<chrono>
+	<random>
+	<SDL.h>
+	<SDL_image.h>
+	"defs.h"
+	"graphics.h"
+	"structs.h"
+	"utils.h"
+
+1711554067 d:\project\game\23021564\utils.h
+
+1711612755 d:\cplusplus\game\graphics.h
+	<SDL.h>
+	<SDL_image.h>
+	<iostream>
+	<cmath>
+	<algorithm>
+	<string>
+	"defs.h"
+	"utils.h"
+
+1711614484 d:\cplusplus\game\defs.h
+	<tuple>
+	<string>
+
+1711615172 d:\cplusplus\game\input.h
+	<SDL.h>
+
+1711612755 d:\cplusplus\game\utils.h
+
+1711615519 d:\cplusplus\game\logic.h
+	<vector>
+	<ctime>
+	<chrono>
+	<random>
+	<SDL.h>
+	<SDL_image.h>
+	"defs.h"
+	"graphics.h"
+	"structs.h"
+	"utils.h"
 	"input.h"
-	<iostream>
 
-1709055074 source:d:\project\game\23021564\main.cpp
+1711614167 d:\cplusplus\game\structs.h
 	<SDL.h>
-	"graphics.h"
-	<iostream>
-
-1709054397 d:\project\game\23021564\structs.h
-	<SDL.h>
+	<SDL_image.h>
 	"defs.h"
 	<iostream>
-
-1709052357 d:\project\game\23021564\defs.h
-
-1709055064 d:\project\game\23021564\graphics.h
-	<SDL.h>
-	"defs.h"
-	<iostream>
-
-1711090891 d:\cplusplus\game\graphics.h
-	<SDL.h>
-	"defs.h"
-	<iostream>
-
-1711090891 d:\cplusplus\game\defs.h
-
-1711090891 d:\cplusplus\game\input.h
-	<SDL.h>
+	<string>
 
