@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include <iostream>
 #include <cmath>
@@ -70,6 +71,12 @@ struct Graphics
 
         if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG))
             std::cout << "SDL_image error:" << IMG_GetError();
+
+        if (TTF_Init() == -1)
+        {
+            cout << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError();
+        }
+
     }
 
     SDL_Texture *loadTexture(const char *filename)
@@ -94,6 +101,46 @@ struct Graphics
         SDL_RenderCopy(renderer, texture, NULL, &dest);
     }
 
+    TTF_Font* loadFont(const char* path, int length)
+    {
+        TTF_Font* gFont = TTF_OpenFont( path, length );
+        if (gFont == nullptr)
+        {
+            SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
+                           SDL_LOG_PRIORITY_ERROR,
+                           "Load font %s", TTF_GetError());
+        }
+    }
+
+    SDL_Texture* renderText(const char* text, TTF_Font* font, SDL_Color textColor)
+    {
+        SDL_Surface* textSurface = TTF_RenderText_Solid( font, text, textColor );
+        if ( textSurface == nullptr )
+        {
+            SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
+                           SDL_LOG_PRIORITY_ERROR,
+                           "Render text surface %s", TTF_GetError());
+            return nullptr;
+        }
+
+        SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, textSurface );
+        if( texture == nullptr )
+        {
+            SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
+                           SDL_LOG_PRIORITY_ERROR,
+                           "Create texture from text %s", SDL_GetError());
+        }
+        SDL_FreeSurface( textSurface );
+        return texture;
+    }
+
+    void showText(string fontPath, int size, string text, int x, int y, int w, int h)
+    {
+        TTF_Font* font = loadFont(fontPath.c_str(), size);
+        SDL_Color color = {255, 255, 0, 0};
+        SDL_Texture* Text = renderText(text.c_str(), font, color);
+        renderTexture(Text, x, y, w, h, renderer);
+    }
 
     void prepareScene()
     {
@@ -110,6 +157,7 @@ struct Graphics
 
     void quit()
     {
+        TTF_Quit();
         IMG_Quit();
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);

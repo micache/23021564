@@ -164,12 +164,26 @@ struct Game
         Graphics graphics;
         graphics.init("Class Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, MENU_SCREEN_WIDTH, MENU_SCREEN_HEIGHT, SDL_WINDOW_INPUT_FOCUS);
 
+        string filePath = "assets/background_class_menu.jpg";
+        SDL_Texture *texture = graphics.loadTexture(filePath.c_str());
+        SDL_RenderCopy(graphics.renderer, texture, NULL, NULL);
+
         int x = 25, y = 50;
         for (int i = 1; i < NUM_CLASS; i++)
         {
-            string filePath = "assets/" + CLASS_NAME[i] + "_icon_" + std::to_string(turn) + ".png";
-            SDL_Texture *texture = graphics.loadTexture(filePath.c_str());
+            filePath = "assets/" + CLASS_NAME[i] + "_icon_" + std::to_string(turn) + ".png";
+            texture = graphics.loadTexture(filePath.c_str());
             graphics.renderTexture(texture, x, y, ON_MENU_TEXTURE_SIZE, ON_MENU_TEXTURE_SIZE, graphics.renderer);
+
+            string tname = CLASS_NAME[i];
+            string thp = "HP: " + to_string(CLASS_HP[i]);
+            string tdame = "DAMAGE: " + to_string(CLASS_DAME[i]);
+            string tstep = "STEPS: " + to_string(CLASS_STEP[i]);
+
+            graphics.showText("assets/classMenu_font.ttf", 15, tname, x, y + ON_MENU_TEXTURE_SIZE + 25, 150, 30);
+            graphics.showText("assets/classMenu_font.ttf", 15, thp, x, y + ON_MENU_TEXTURE_SIZE + 55, 150, 30);
+            graphics.showText("assets/classMenu_font.ttf", 15, tdame, x, y + ON_MENU_TEXTURE_SIZE + 85, 150, 30);
+            graphics.showText("assets/classMenu_font.ttf", 15, tstep, x, y + ON_MENU_TEXTURE_SIZE + 115, 150, 30);
 
             x += 50 + ON_MENU_TEXTURE_SIZE;
         }
