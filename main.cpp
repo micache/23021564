@@ -19,12 +19,12 @@ int main(int argc, char* argv[]) {
     while (1)
     {
         graphics.prepareScene();
-        game.draw(graphics);
+        game.draw(turn, graphics);
         graphics.presentScene();
 
-        game.playTurn(turn);
+        game.playTurn(turn, graphics);
 
-        SDL_Delay(10);
+        //SDL_Delay(10);
     }
 
     graphics.quit();

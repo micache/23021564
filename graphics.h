@@ -110,6 +110,7 @@ struct Graphics
                            SDL_LOG_PRIORITY_ERROR,
                            "Load font %s", TTF_GetError());
         }
+        return gFont;
     }
 
     SDL_Texture* renderText(const char* text, TTF_Font* font, SDL_Color textColor)
@@ -161,7 +162,7 @@ struct Graphics
         IMG_Quit();
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
-        SDL_Quit();
+        //SDL_Quit();
     }
 };
 

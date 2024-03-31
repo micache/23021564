@@ -20,6 +20,25 @@ bool isInTriangle(float x, float y, float x1, float y1, float x2, float y2, floa
     return 0;
 }
 
+bool isInRect(int x, int y, int u, int v, int h, int w)
+{
+    return (u <= x && x <= u + w - 1 && v <= y && y <= v + h - 1);
+}
+
+float distEuclid(pair<float, float> x1, pair<float, float> x2)
+{
+    return sqrt((x2.first - x1.first) * (x2.first - x1.first) + (x2.second - x1.second) * (x2.second - x1.second));
+}
+
+int numSteps(float dist)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (dist <= DIST_BETWEEN_TILE[i])
+            return i;
+    }
+}
+
 string convertToString(int id)
 {
     string tname = "NAME: " + CLASS_NAME[id];

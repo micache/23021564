@@ -18,6 +18,11 @@ struct MapTile
     {
         colorId = MAP_COLOR_GRASS;
     }
+
+    bool operator == (const MapTile& other) const
+    {
+        return center == other.center;
+    }
 };
 
 struct Unit
@@ -38,6 +43,16 @@ struct Unit
         player = side;
         string filePath = "assets/" + name + "_icon_" + std::to_string(player) + ".png";
         texture = graphics.loadTexture(filePath.c_str());
+    }
+
+    void attack(Unit& other)
+    {
+        other.hp -= dame;
+    }
+
+    bool operator == (const Unit& other) const
+    {
+        return curPos == other.curPos && name == other.name && player == other.player;
     }
 };
 
