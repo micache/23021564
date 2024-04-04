@@ -94,7 +94,6 @@ struct Game
 
     void drawMap(SDL_Renderer* renderer)
     {
-        //Draw lines of hex
         for (const MapTile* hex : allMapTile)
         {
             //set color
@@ -129,22 +128,61 @@ struct Game
         }
     }
 
-    void drawUnits(bool turn, Graphics& graphics)
+    void drawUnits(Graphics& graphics)
     {
         for (auto& unit : allUnits)
         {
-            if (unit->curPos == center[turn]->curPos && unit->name != "center")
+            if (unit->curPos == center[unit->player]->curPos && unit->name != "center")
                 continue;
+            //draw icon
             float cenX = unit->curPos->center.first, cenY = unit->curPos->center.second;
             int sz = unit->name == "center" ? 64 : ON_MAP_TEXTURE_SIZE;
             graphics.renderTexture(unit->texture, cenX - sz / 2, cenY - sz / 2, sz, sz, graphics.renderer);
+
+            //draw hp bar
+            SDL_FRect hpBar;
+            hpBar.x = cenX - HP_BAR_WIDTH / 2;
+            hpBar.y = cenY + sz / 2;
+            hpBar.w = HP_BAR_WIDTH;
+            hpBar.h = HP_BAR_HEIGHT;
+
+            //Fill all bar with green
+            tuple<int, int, int> color = MAP_TILE_COLOR[1];
+            SDL_SetRenderDrawColor(graphics.renderer, std::get<0>(color), std::get<1>(color), std::get<2>(color), 0);
+            SDL_RenderFillRectF(graphics.renderer, &hpBar);
+
+            //draw the lost hp with red
+            SDL_FRect hpLost;
+            float percentLost = (1. * CLASS_HP[unit->id] - unit->hp) / CLASS_HP[unit->id];
+            hpLost.x = hpBar.x + HP_BAR_WIDTH - percentLost * HP_BAR_WIDTH;
+            hpLost.y = hpBar.y;
+            hpLost.w = percentLost * HP_BAR_WIDTH;
+            hpLost.h = hpBar.h;
+
+            SDL_SetRenderDrawColor(graphics.renderer, 255, 0, 0, 0);
+            SDL_RenderFillRectF(graphics.renderer, &hpLost);
+
+            //draw boundary
+            SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 0);
+            SDL_RenderDrawRectF(graphics.renderer, &hpBar);
         }
     }
 
     void draw(bool turn, Graphics& graphics)
     {
         drawMap(graphics.renderer);
-        drawUnits(turn, graphics);
+        drawUnits(graphics);
+    }
+
+    void initTurn(bool turn, Graphics& graphics)
+    {
+        for (auto& unit : allUnits)
+        {
+            if (unit->player == turn)
+            {
+                unit->steps = CLASS_STEP[unit->id];
+            }
+        }
     }
 
     MapTile* tileClicked(int x, int y)
@@ -200,21 +238,33 @@ struct Game
             Unit* unitTile = unitOnTile(tile);
 
             float dist = distEuclid(unit->curPos->center, tile->center);
-            cerr << dist << '\n';
-            if (unitTile == NULL && numSteps(dist) <= unit->steps)
+            int steps = numSteps(dist);
+            cerr << steps << '\n';
+
+            //move normally
+            if (unitTile == NULL && steps <= unit->steps)
             {
                 cerr << ":D\n";
+                unit->steps -= steps;
                 unit->curPos = tile;
                 return;
             }
 
-            if (unitTile != NULL && unitTile->player != unit->player)
+            //attack other unit
+            if (unitTile != NULL && steps + 1 <= unit->steps && unitTile->player != unit->player)
             {
                 unit->attack(*unitTile);
+                unit->steps -= steps + 1;
                 if (unitTile->hp <= 0)
                 {
                     removeUnit(unitTile);
                 }
+                return;
+            }
+
+            //don't move (click on itself)
+            if (steps == 0)
+            {
                 return;
             }
         }
@@ -309,20 +359,34 @@ struct Game
             inQueue[turn] = -1;
         }
 
-        Unit* unit;
-        Input input;
-        do
+        while (1)
         {
-            pair<int, int> mousePos = input.getMousePos();
-            unit = unitOnTile(tileClicked(mousePos.first, mousePos.second));
-        }while (unit == NULL || unit->player != turn);
+            graphics.prepareScene();
+            draw(turn, graphics);
+            graphics.presentScene();
 
-        if (unit->name == "center")
-        {
-            showClassMenu(turn);
-        } else
-        {
-            Move(unit);
+            Unit* unit;
+            Input input;
+            do
+            {
+                pair<int, int> mousePos = input.getMousePos();
+                //End turn
+                if (mousePos == make_pair(-1, -1))
+                {
+                    cerr << "End player " << turn << " turn\n";
+                    return;
+                }
+
+                unit = unitOnTile(tileClicked(mousePos.first, mousePos.second));
+            }while (unit == NULL || unit->player != turn);
+
+            if (unit->name == "center")
+            {
+                showClassMenu(turn);
+            } else
+            {
+                Move(unit);
+            }
         }
     }
 };

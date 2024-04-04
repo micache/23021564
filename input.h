@@ -22,6 +22,12 @@ struct Input
                     int x, y;
                     SDL_GetMouseState(&x, &y);
                     return {x, y};
+
+                case SDL_KEYDOWN:
+                    if (event.key.keysym.scancode == SDL_SCANCODE_E)
+                    {
+                        return {-1, -1};
+                    }
             }
         }
     }

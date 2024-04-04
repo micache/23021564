@@ -33,4 +33,9 @@ const int CLASS_STEP[NUM_CLASS] = {0, 2, 1, 3, 2};
 
 const float DIST_BETWEEN_TILE[4] = {0, 86.4523, 172.905, 259.357};
 
+#define HP_BAR_WIDTH 40
+#define HP_BAR_HEIGHT 6
+
+const int INF = 2e9 + 5;
+
 #endif

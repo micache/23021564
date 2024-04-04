@@ -18,13 +18,10 @@ int main(int argc, char* argv[]) {
 
     while (1)
     {
-        graphics.prepareScene();
-        game.draw(turn, graphics);
-        graphics.presentScene();
-
+        game.initTurn(turn, graphics);
         game.playTurn(turn, graphics);
 
-        //SDL_Delay(10);
+        turn = !turn;
     }
 
     graphics.quit();

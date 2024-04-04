@@ -29,12 +29,13 @@ struct Unit
 {
     string name;
     MapTile* curPos;
-    int hp, dame, steps;
+    int hp, dame, steps, id;
     bool player;
     SDL_Texture *texture;
 
     Unit (int id, MapTile* _curPos, bool side, Graphics& graphics)
     {
+        this->id = id;
         name = CLASS_NAME[id];
         hp = CLASS_HP[id];
         dame = CLASS_DAME[id];

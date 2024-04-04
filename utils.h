@@ -37,6 +37,7 @@ int numSteps(float dist)
         if (dist <= DIST_BETWEEN_TILE[i])
             return i;
     }
+    return INF;
 }
 
 string convertToString(int id)
