@@ -31,9 +31,8 @@ struct Unit
     MapTile* curPos;
     int hp, dame, steps, id;
     bool player;
-    SDL_Texture *texture;
 
-    Unit (int id, MapTile* _curPos, bool side, Graphics& graphics)
+    Unit (int id, MapTile* _curPos, bool side)
     {
         this->id = id;
         name = CLASS_NAME[id];
@@ -42,8 +41,13 @@ struct Unit
         steps = CLASS_STEP[id];
         curPos = _curPos;
         player = side;
+
+    }
+
+    SDL_Texture* getTexture(Graphics& graphics)
+    {
         string filePath = "assets/" + name + "_icon_" + std::to_string(player) + ".png";
-        texture = graphics.loadTexture(filePath.c_str());
+        return graphics.loadTexture(filePath.c_str());
     }
 
     void attack(Unit& other)

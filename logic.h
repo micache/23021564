@@ -5,6 +5,7 @@
 #include <ctime>
 #include <chrono>
 #include <random>
+#include <assert.h>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -79,10 +80,10 @@ struct Game
     {
         allUnits.clear();
 
-        center[0] = new Unit(0, allMapTile[16], 0, graphics);
+        center[0] = new Unit(0, allMapTile[16], 0);
         allUnits.push_back(center[0]);
 
-        center[1] = new Unit(0, allMapTile[137], 1, graphics);
+        center[1] = new Unit(0, allMapTile[137], 1);
         allUnits.push_back(center[1]);
     }
 
@@ -137,7 +138,7 @@ struct Game
             //draw icon
             float cenX = unit->curPos->center.first, cenY = unit->curPos->center.second;
             int sz = unit->name == "center" ? 64 : ON_MAP_TEXTURE_SIZE;
-            graphics.renderTexture(unit->texture, cenX - sz / 2, cenY - sz / 2, sz, sz, graphics.renderer);
+            graphics.renderTexture(unit->getTexture(graphics), cenX - sz / 2, cenY - sz / 2, sz, sz, graphics.renderer);
 
             //draw hp bar
             SDL_FRect hpBar;
@@ -309,8 +310,29 @@ struct Game
             x += 50 + ON_MENU_TEXTURE_SIZE;
         }
 
-        string tqueue = "Unit in queue: " + (inQueue[turn] == -1 ? "None" : CLASS_NAME[inQueue[turn]]) + (inQueue[turn] == -1 ? "" : "(" + to_string(turnLeft[turn]) + " turns left)");
+        string tqueue = "unit is being created: ";
         graphics.showText(fontPath, 20, tqueue, 100, 430, 600, 50);
+        if (inQueue[turn] != -1)
+        {
+            filePath = "assets/" + CLASS_NAME[inQueue[turn]] + "_icon_" + std::to_string(turn) + ".png";
+            texture = graphics.loadTexture(filePath.c_str());
+            graphics.renderTexture(texture, 700, 430, 50, 50, graphics.renderer);
+        }
+
+        string texist = "unit is finished: ";
+        graphics.showText(fontPath, 15, texist, 80, 490, 300, 40);
+
+        int Xleft = 380;
+        for (auto& unit : allUnits)
+        {
+            if (unit->curPos == center[turn]->curPos && unit->name != "center")
+            {
+                cerr << "Finished: " << unit->name << "\n";
+                //graphics.showText(fontPath, 15, unit->name, Xleft, 490, 32, 32);
+                graphics.renderTexture(unit->getTexture(graphics), Xleft, 490, 40, 40, graphics.renderer);
+                Xleft += 42;
+            }
+        }
 
         graphics.presentScene();
 
@@ -354,7 +376,7 @@ struct Game
 
         if (inQueue[turn] != -1 && turnLeft[turn] == 0)
         {
-            Unit* newUnit = new Unit(inQueue[turn], center[turn]->curPos, turn, graphics);
+            Unit* newUnit = new Unit(inQueue[turn], center[turn]->curPos, turn);
             allUnits.push_back(newUnit);
             inQueue[turn] = -1;
         }
