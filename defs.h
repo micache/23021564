@@ -38,4 +38,90 @@ const float DIST_BETWEEN_TILE[4] = {0, 86.4523, 172.905, 259.357};
 
 const int INF = 2e9 + 5;
 
+const int ARCHER_ATK_CLIP[][4] = {{0, 0, 38, 38},
+                                  {38, 0, 38, 38},
+                                  {76, 0, 38, 38},
+                                  {0, 38, 38, 38},
+                                  {38, 38, 38, 38}};
+const int ARCHER_ATK_FRAMES = sizeof(ARCHER_ATK_CLIP)/sizeof(int)/4;
+
+const int ARCHER_HIT_CLIP[][4] = {{0, 0, 38, 38},
+                                  {38, 0, 38, 38},
+                                  {76, 0, 38, 38},
+                                  {0, 38, 38, 38}};
+const int ARCHER_HIT_FRAMES = sizeof(ARCHER_HIT_CLIP)/sizeof(int)/4;
+
+const int ARCHER_WALK_CLIP[][4] = {{0, 0, 38, 38},
+                                  {38, 0, 38, 38},
+                                  {76, 0, 38, 38},
+                                  {0, 38, 38, 38},
+                                  {38, 38, 38, 38},
+                                  {76, 38, 38, 38},
+                                  {0, 76, 38, 38}};
+const int ARCHER_WALK_FRAMES = sizeof(ARCHER_WALK_CLIP)/sizeof(int)/4;
+
+const int SWORDSMAN_WALK_CLIP[][4] = {{0, 64, 64, 64},
+                                  {64, 64, 64, 64},
+                                  {128, 64, 64, 64},
+                                  {192, 64, 64, 64},
+                                  {256, 64, 64, 64},
+                                  {320, 64, 64, 64},
+                                  {384, 64, 64, 64},
+                                  {448, 64, 64, 64}};
+const int SWORDSMAN_WALK_FRAMES = sizeof(SWORDSMAN_WALK_CLIP)/sizeof(int)/4;
+
+const int SWORDSMAN_ATK_CLIP[][4] = {{0, 320, 64, 64},
+                                     {64, 320, 64, 64},
+                                     {128, 320, 64, 64}};
+const int SWORDSMAN_ATK_FRAMES = sizeof(SWORDSMAN_ATK_CLIP)/sizeof(int)/4;
+
+const int SWORDSMAN_HIT_CLIP[][4] = {{0, 512, 64, 64},
+                                     {64, 512, 64, 64}};
+const int SWORDSMAN_HIT_FRAMES = sizeof(SWORDSMAN_HIT_CLIP)/sizeof(int)/4;
+
+const int SCOUT_WALK_CLIP[][4] = {{0, 0, 231, 190},
+                                  {231, 0, 231, 190},
+                                  {231*2, 0, 231, 190},
+                                  {231*3, 0, 231, 190},
+                                  {231*4, 0, 231, 190},
+                                  {231*5, 0, 231, 190},
+                                  {231*6, 0, 231, 190},
+                                  {231*7, 0, 231, 190}};
+const int SCOUT_WALK_FRAMES = sizeof(SCOUT_WALK_CLIP)/sizeof(int)/4;
+
+const int SCOUT_ATK_CLIP[][4] = {{0, 0, 231, 190},
+                                  {231, 0, 231, 190},
+                                  {231*2, 0, 231, 190},
+                                  {231*3, 0, 231, 190},
+                                  {231*4, 0, 231, 190},
+                                  {231*5, 0, 231, 190},
+                                  {231*6, 0, 231, 190},
+                                  {231*7, 0, 231, 190}};
+const int SCOUT_ATK_FRAMES = sizeof(SCOUT_ATK_CLIP)/sizeof(int)/4;
+
+const int SCOUT_HIT_CLIP[][4] = {{0, 0, 231, 190},
+                                  {231, 0, 231, 190},
+                                  {231*2, 0, 231, 190},
+                                  {231*3, 0, 231, 190}};
+const int SCOUT_HIT_FRAMES = sizeof(SCOUT_HIT_CLIP)/sizeof(int)/4;
+
+const int KNIGHT_WALK_CLIP[][4] = {{0, 64, 64, 64},
+                                  {64, 64, 64, 64},
+                                  {128, 64, 64, 64},
+                                  {192, 64, 64, 64},
+                                  {256, 64, 64, 64},
+                                  {320, 64, 64, 64},
+                                  {384, 64, 64, 64},
+                                  {448, 64, 64, 64}};
+const int KNIGHT_WALK_FRAMES = sizeof(KNIGHT_WALK_CLIP)/sizeof(int)/4;
+
+const int KNIGHT_ATK_CLIP[][4] = {{0, 320, 64, 64},
+                                     {64, 320, 64, 64},
+                                     {128, 320, 64, 64}};
+const int KNIGHT_ATK_FRAMES = sizeof(KNIGHT_ATK_CLIP)/sizeof(int)/4;
+
+const int KNIGHT_HIT_CLIP[][4] = {{0, 512, 64, 64},
+                                     {64, 512, 64, 64}};
+const int KNIGHT_HIT_FRAMES = sizeof(KNIGHT_HIT_CLIP)/sizeof(int)/4;
+
 #endif

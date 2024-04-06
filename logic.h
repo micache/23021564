@@ -87,10 +87,31 @@ struct Game
         allUnits.push_back(center[1]);
     }
 
+    Sprite unitAnim[4][2][3]; /// 0: walk, 1: atk, 2: hit
+
+    void initAnim()
+    {
+        for (int t = 0; t < 2; t++)
+        {
+            //archer
+            SDL_Texture* texture = graphics.loadTexture(("assets/archer_walk_sheet_" + std::to_string(t)).c_str());
+            unitAnim[0][t][0].init(texture, ARCHER_WALK_FRAMES, ARCHER_WALK_CLIP);
+
+            texture = graphics.loadTexture(("assets/archer_atk_sheet_" + std::to_string(t)).c_str());
+            unitAnim[0][t][1].init(texture, ARCHER_ATK_FRAMES, ARCHER_ATK_CLIP);
+
+            texture = graphics.loadTexture(("assets/archer_hit_sheet_" + std::to_string(t)).c_str());
+            unitAnim[0][t][2].init(texture, ARCHER_HIT_FRAMES, ARCHER_HIT_CLIP);
+
+
+        }
+    }
+
     void init(Graphics& graphics)
     {
         initMap();
         initUnits(graphics);
+        initAnim();
     }
 
     void drawMap(SDL_Renderer* renderer)
@@ -376,7 +397,9 @@ struct Game
 
         if (inQueue[turn] != -1 && turnLeft[turn] == 0)
         {
-            Unit* newUnit = new Unit(inQueue[turn], center[turn]->curPos, turn);
+            Unit* newUnit = new Unit(inQueue[turn], center[turn]->curPos, turn, &unitAnim[inQueue[turn] - 1][turn][0],
+                                                                                &unitAnim[inQueue[turn] - 1][turn][1],
+                                                                                &unitAnim[inQueue[turn] - 1][turn][2]);
             allUnits.push_back(newUnit);
             inQueue[turn] = -1;
         }
