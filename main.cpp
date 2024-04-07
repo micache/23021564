@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     while (1)
     {
         game.initTurn(turn, graphics);
-        game.playTurn(turn, graphics);
+        game.playTurn(graphics);
 
         turn = !turn;
     }

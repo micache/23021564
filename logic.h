@@ -22,6 +22,7 @@ struct Game
 {
     vector<MapTile*> allMapTile;
     vector<Unit*> allUnits;
+    bool turn;
 
     void genHexagon(float centerX, float centerY)
     {
@@ -80,30 +81,58 @@ struct Game
     {
         allUnits.clear();
 
-        center[0] = new Unit(0, allMapTile[16], 0);
+        center[0] = new Unit(0, allMapTile[16], 0, NULL, NULL, NULL);
         allUnits.push_back(center[0]);
 
-        center[1] = new Unit(0, allMapTile[137], 1);
+        center[1] = new Unit(0, allMapTile[137], 1, NULL, NULL, NULL);
         allUnits.push_back(center[1]);
     }
 
     Sprite unitAnim[4][2][3]; /// 0: walk, 1: atk, 2: hit
 
-    void initAnim()
+    void initAnim(Graphics& graphics)
     {
         for (int t = 0; t < 2; t++)
         {
             //archer
-            SDL_Texture* texture = graphics.loadTexture(("assets/archer_walk_sheet_" + std::to_string(t)).c_str());
+            SDL_Texture* texture = graphics.loadTexture(("assets/archer_walk_sheet_" + std::to_string(t) + ".png").c_str());
             unitAnim[0][t][0].init(texture, ARCHER_WALK_FRAMES, ARCHER_WALK_CLIP);
 
-            texture = graphics.loadTexture(("assets/archer_atk_sheet_" + std::to_string(t)).c_str());
+            texture = graphics.loadTexture(("assets/archer_atk_sheet_" + std::to_string(t) + ".png").c_str());
             unitAnim[0][t][1].init(texture, ARCHER_ATK_FRAMES, ARCHER_ATK_CLIP);
 
-            texture = graphics.loadTexture(("assets/archer_hit_sheet_" + std::to_string(t)).c_str());
+            texture = graphics.loadTexture(("assets/archer_hit_sheet_" + std::to_string(t) + ".png").c_str());
             unitAnim[0][t][2].init(texture, ARCHER_HIT_FRAMES, ARCHER_HIT_CLIP);
 
+            //swordsman
+            texture = graphics.loadTexture(("assets/swordsman_sheet_" + std::to_string(t) + ".png").c_str());
+            unitAnim[1][t][0].init(texture, SWORDSMAN_WALK_FRAMES, SWORDSMAN_WALK_CLIP);
 
+            texture = graphics.loadTexture(("assets/swordsman_sheet_" + std::to_string(t) + ".png").c_str());
+            unitAnim[1][t][1].init(texture, SWORDSMAN_ATK_FRAMES, SWORDSMAN_ATK_CLIP);
+
+            texture = graphics.loadTexture(("assets/swordsman_sheet_" + std::to_string(t) + ".png").c_str());
+            unitAnim[1][t][2].init(texture, SWORDSMAN_HIT_FRAMES, SWORDSMAN_HIT_CLIP);
+
+            //scout
+            texture = graphics.loadTexture(("assets/scout_walk_sheet_" + std::to_string(t) + ".png").c_str());
+            unitAnim[2][t][0].init(texture, SCOUT_WALK_FRAMES, SCOUT_WALK_CLIP);
+
+            texture = graphics.loadTexture(("assets/scout_atk_sheet_" + std::to_string(t) + ".png").c_str());
+            unitAnim[2][t][1].init(texture, SCOUT_ATK_FRAMES, SCOUT_ATK_CLIP);
+
+            texture = graphics.loadTexture(("assets/scout_hit_sheet_" + std::to_string(t) + ".png").c_str());
+            unitAnim[2][t][2].init(texture, SCOUT_HIT_FRAMES, SCOUT_HIT_CLIP);
+
+            //knight
+            texture = graphics.loadTexture(("assets/knight_sheet_" + std::to_string(t) + ".png").c_str());
+            unitAnim[3][t][0].init(texture, KNIGHT_WALK_FRAMES, KNIGHT_WALK_CLIP);
+
+            texture = graphics.loadTexture(("assets/knight_sheet_" + std::to_string(t) + ".png").c_str());
+            unitAnim[3][t][1].init(texture, KNIGHT_ATK_FRAMES, KNIGHT_ATK_CLIP);
+
+            texture = graphics.loadTexture(("assets/knight_sheet_" + std::to_string(t) + ".png").c_str());
+            unitAnim[3][t][2].init(texture, KNIGHT_HIT_FRAMES, KNIGHT_HIT_CLIP);
         }
     }
 
@@ -111,7 +140,7 @@ struct Game
     {
         initMap();
         initUnits(graphics);
-        initAnim();
+        initAnim(graphics);
     }
 
     void drawMap(SDL_Renderer* renderer)
@@ -190,14 +219,15 @@ struct Game
         }
     }
 
-    void draw(bool turn, Graphics& graphics)
+    void draw(Graphics& graphics)
     {
         drawMap(graphics.renderer);
         drawUnits(graphics);
     }
 
-    void initTurn(bool turn, Graphics& graphics)
+    void initTurn(bool _turn, Graphics& graphics)
     {
+        turn = _turn;
         for (auto& unit : allUnits)
         {
             if (unit->player == turn)
@@ -243,12 +273,70 @@ struct Game
             {
                 swap(un, allUnits.back());
                 allUnits.pop_back();
+                delete(un);
                 return;
             }
         }
     }
 
-    void Move(Unit* unit)
+    void walkAnim(Unit* unit, MapTile* tile, Graphics& graphics)
+    {
+        const int STEP = 5;
+        int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
+        float endX = tile->center.first - ON_MAP_TEXTURE_SIZE / 2, endY = tile->center.second - ON_MAP_TEXTURE_SIZE / 2;
+        int vx = x < endX ? 1 : -1, vy = y < endY ? 1 : -1;
+        int distx = abs(x - endX), disty = abs(y - endY);
+        while (distx || disty)
+        {
+            cerr << distx << ' ' << disty << '\n';
+            graphics.prepareScene();
+            draw(graphics);
+            graphics.renderAnim(x, y, unit->walk);
+            graphics.presentScene();
+
+            unit->walk->tick();
+            if (distx >= STEP)
+            {
+                x += vx * STEP;
+                distx -= STEP;
+            }
+            if (disty >= STEP)
+            {
+                y += vy * STEP;
+                disty -= STEP;
+            }
+            if (distx < STEP && disty < STEP)
+                break;
+            SDL_Delay(30);
+        }
+        unit->resetAnim();
+    }
+
+    void atkAnim(Unit* unit, Graphics& graphics)
+    {
+        int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
+        do
+        {
+            graphics.renderAnim(x, y, unit->atk);
+            unit->atk->tick();
+            SDL_Delay(100);
+        }while(unit->atk->currentFrame != 0);
+        unit->resetAnim();
+    }
+
+    void hitAnim(Unit* unit, Graphics& graphics)
+    {
+        int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
+        do
+        {
+            graphics.renderAnim(x, y, unit->hit);
+            unit->hit->tick();
+            SDL_Delay(100);
+        }while(unit->hit->currentFrame != 0);
+        unit->resetAnim();
+    }
+
+    void Move(Unit* unit, Graphics& graphics)
     {
         Input input;
         while (1)
@@ -263,10 +351,11 @@ struct Game
             int steps = numSteps(dist);
             cerr << steps << '\n';
 
-            //move normally
+            //walk
             if (unitTile == NULL && steps <= unit->steps)
             {
-                cerr << ":D\n";
+                cerr << "WALK\n";
+                walkAnim(unit, tile, graphics);
                 unit->steps -= steps;
                 unit->curPos = tile;
                 return;
@@ -275,7 +364,10 @@ struct Game
             //attack other unit
             if (unitTile != NULL && steps + 1 <= unit->steps && unitTile->player != unit->player)
             {
-                unit->attack(*unitTile);
+                cerr << "ATK\n";
+                atkAnim(unit, graphics);
+                hitAnim(unitTile, graphics);
+                unitTile->hp -= unit->dame;
                 unit->steps -= steps + 1;
                 if (unitTile->hp <= 0)
                 {
@@ -294,7 +386,7 @@ struct Game
 
     int inQueue[2] = {-1, -1}, turnLeft[2] = {-1, -1};
 
-    void showClassMenu(bool turn)
+    Unit* showClassMenu()
     {
         Graphics graphics;
         graphics.init("Class Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, MENU_SCREEN_WIDTH, MENU_SCREEN_HEIGHT, SDL_WINDOW_INPUT_FOCUS);
@@ -378,20 +470,19 @@ struct Game
                             if (unit->curPos == center[turn]->curPos && unit->name == CLASS_NAME[i])
                             {
                                 graphics.quit();
-                                Move(unit);
-                                return;
+                                return unit;
                             }
                         }
                     }
                     graphics.quit();
-                    return;
+                    return NULL;
                 }
             }
         }
 
     }
 
-    void playTurn(bool turn, Graphics& graphics)
+    void playTurn(Graphics& graphics)
     {
         turnLeft[turn]--;
 
@@ -407,7 +498,7 @@ struct Game
         while (1)
         {
             graphics.prepareScene();
-            draw(turn, graphics);
+            draw(graphics);
             graphics.presentScene();
 
             Unit* unit;
@@ -427,11 +518,11 @@ struct Game
 
             if (unit->name == "center")
             {
-                showClassMenu(turn);
-            } else
-            {
-                Move(unit);
+                unit = showClassMenu();
             }
+
+            if (unit != NULL)
+                Move(unit, graphics);
         }
     }
 };

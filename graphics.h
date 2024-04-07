@@ -12,6 +12,7 @@
 
 #include "defs.h"
 #include "utils.h"
+#include "structs.h"
 
 void colorTriangle(SDL_Renderer *renderer, float x1, float y1, float x2, float y2, float x3, float y3)
 {
@@ -142,6 +143,14 @@ struct Graphics
         SDL_Texture* Text = renderText(text.c_str(), font, color);
         renderTexture(Text, x, y, w, h, renderer);
     }
+
+    void renderAnim(int x, int y, Sprite* sprite)
+    {
+        const SDL_Rect* clip = sprite->getCurrentClip();
+        SDL_Rect renderQuad = {x, y, ON_MAP_TEXTURE_SIZE, ON_MAP_TEXTURE_SIZE};
+        SDL_RenderCopy(renderer, sprite->texture, clip, &renderQuad);
+    }
+
 
     void prepareScene()
     {

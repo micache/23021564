@@ -25,7 +25,7 @@ const std::tuple<int, int, int> MAP_TILE_COLOR[3] = {{55, 105, 33}, {81, 197, 30
 const std::string CLASS_NAME[NUM_CLASS] = {"center", "archer", "swordsman", "scout", "knight"};
 const int CLASS_HP[NUM_CLASS] = {200, 40, 65, 45, 70};
 const int CLASS_DAME[NUM_CLASS] = {10, 7, 4, 2, 6};
-const int CLASS_COST[NUM_CLASS] = {0, 3, 2, 3, 6};
+const int CLASS_COST[NUM_CLASS] = {0, 1, 1, 1, 1};
 const int CLASS_STEP[NUM_CLASS] = {0, 2, 1, 3, 2};
 
 #define ON_MAP_TEXTURE_SIZE 54
