@@ -82,9 +82,11 @@ struct Game
         allUnits.clear();
 
         center[0] = new Unit(0, allMapTile[16], 0, NULL, NULL, NULL);
+        center[0]->initTexture(graphics);
         allUnits.push_back(center[0]);
 
         center[1] = new Unit(0, allMapTile[137], 1, NULL, NULL, NULL);
+        center[1]->initTexture(graphics);
         allUnits.push_back(center[1]);
     }
 
@@ -188,7 +190,7 @@ struct Game
             //draw icon
             float cenX = unit->curPos->center.first, cenY = unit->curPos->center.second;
             int sz = unit->name == "center" ? 64 : ON_MAP_TEXTURE_SIZE;
-            graphics.renderTexture(unit->getTexture(graphics), cenX - sz / 2, cenY - sz / 2, sz, sz, graphics.renderer);
+            graphics.renderTexture(unit->texture, cenX - sz / 2, cenY - sz / 2, sz, sz, graphics.renderer);
 
             //draw hp bar
             SDL_FRect hpBar;
@@ -286,6 +288,7 @@ struct Game
         float endX = tile->center.first - ON_MAP_TEXTURE_SIZE / 2, endY = tile->center.second - ON_MAP_TEXTURE_SIZE / 2;
         int vx = x < endX ? 1 : -1, vy = y < endY ? 1 : -1;
         int distx = abs(x - endX), disty = abs(y - endY);
+        unit->texture = NULL;
         while (distx || disty)
         {
             cerr << distx << ' ' << disty << '\n';
@@ -310,23 +313,31 @@ struct Game
             SDL_Delay(30);
         }
         unit->resetAnim();
+        unit->initTexture(graphics);
     }
 
     void atkAnim(Unit* unit, Graphics& graphics)
     {
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
+        unit->texture = NULL;
         do
         {
+            graphics.prepareScene();
+            draw(graphics);
             graphics.renderAnim(x, y, unit->atk);
+            graphics.presentScene();
+
             unit->atk->tick();
-            SDL_Delay(100);
+            SDL_Delay(30);
         }while(unit->atk->currentFrame != 0);
         unit->resetAnim();
+        unit->initTexture(graphics);
     }
 
     void hitAnim(Unit* unit, Graphics& graphics)
     {
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
+        unit->texture = NULL;
         do
         {
             graphics.renderAnim(x, y, unit->hit);
@@ -334,6 +345,7 @@ struct Game
             SDL_Delay(100);
         }while(unit->hit->currentFrame != 0);
         unit->resetAnim();
+        unit->initTexture(graphics);
     }
 
     void Move(Unit* unit, Graphics& graphics)
@@ -442,7 +454,8 @@ struct Game
             {
                 cerr << "Finished: " << unit->name << "\n";
                 //graphics.showText(fontPath, 15, unit->name, Xleft, 490, 32, 32);
-                graphics.renderTexture(unit->getTexture(graphics), Xleft, 490, 40, 40, graphics.renderer);
+                unit->initTexture(graphics);
+                graphics.renderTexture(unit->texture, Xleft, 490, 40, 40, graphics.renderer);
                 Xleft += 42;
             }
         }
@@ -491,6 +504,7 @@ struct Game
             Unit* newUnit = new Unit(inQueue[turn], center[turn]->curPos, turn, &unitAnim[inQueue[turn] - 1][turn][0],
                                                                                 &unitAnim[inQueue[turn] - 1][turn][1],
                                                                                 &unitAnim[inQueue[turn] - 1][turn][2]);
+            newUnit->initTexture(graphics);
             allUnits.push_back(newUnit);
             inQueue[turn] = -1;
         }

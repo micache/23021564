@@ -71,6 +71,7 @@ struct Unit
     int hp, dame, steps, id;
     bool player;
     Sprite *walk, *atk, *hit;
+    SDL_Texture* texture;
 
     Unit (int id, MapTile* _curPos, bool side, Sprite* _walk, Sprite* _atk, Sprite* _hit)
     {
@@ -87,10 +88,10 @@ struct Unit
     }
 
 
-    SDL_Texture* getTexture(auto& graphics)
+    void initTexture(auto& graphics)
     {
         string filePath = "assets/" + name + "_icon_" + std::to_string(player) + ".png";
-        return graphics.loadTexture(filePath.c_str());
+        texture = graphics.loadTexture(filePath.c_str());
     }
 
     void resetAnim()
