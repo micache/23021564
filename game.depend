@@ -23,10 +23,11 @@
 	<tuple>
 	<string>
 
-1712506937 d:\project\game\23021564\graphics.h
+1712893148 d:\project\game\23021564\graphics.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
+	<SDL_mixer.h>
 	<iostream>
 	<cmath>
 	<algorithm>
@@ -38,7 +39,7 @@
 1712238601 d:\project\game\23021564\input.h
 	<SDL.h>
 
-1712593399 d:\project\game\23021564\logic.h
+1712896396 d:\project\game\23021564\logic.h
 	<vector>
 	<ctime>
 	<chrono>
@@ -46,6 +47,7 @@
 	<assert.h>
 	<SDL.h>
 	<SDL_image.h>
+	<SDL_mixer.h>
 	"defs.h"
 	"graphics.h"
 	"structs.h"

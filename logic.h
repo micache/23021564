@@ -9,6 +9,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 
 #include "defs.h"
 #include "graphics.h"
@@ -283,18 +284,22 @@ struct Game
 
     void walkAnim(Unit* unit, MapTile* tile, Graphics& graphics)
     {
-        const int STEP = 5;
+        const int STEP = 7;
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
         float endX = tile->center.first - ON_MAP_TEXTURE_SIZE / 2, endY = tile->center.second - ON_MAP_TEXTURE_SIZE / 2;
         int vx = x < endX ? 1 : -1, vy = y < endY ? 1 : -1;
         int distx = abs(x - endX), disty = abs(y - endY);
         unit->texture = NULL;
+
+        Mix_Music *walkSound = graphics.loadMusic("assets/walk_sound.mp3");
+        graphics.play(walkSound);
+
         while (distx || disty)
         {
             cerr << distx << ' ' << disty << '\n';
             graphics.prepareScene();
             draw(graphics);
-            graphics.renderAnim(x, y, unit->walk);
+            graphics.renderAnim(x, y, unit->walk, x > endX);
             graphics.presentScene();
 
             unit->walk->tick();
@@ -310,13 +315,13 @@ struct Game
             }
             if (distx < STEP && disty < STEP)
                 break;
-            SDL_Delay(30);
+            SDL_Delay(10);
         }
         unit->resetAnim();
         unit->initTexture(graphics);
     }
 
-    void atkAnim(Unit* unit, Graphics& graphics)
+    void atkAnim(Unit* unit, Graphics& graphics, MapTile* tile)
     {
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
         unit->texture = NULL;
@@ -324,7 +329,7 @@ struct Game
         {
             graphics.prepareScene();
             draw(graphics);
-            graphics.renderAnim(x, y, unit->atk);
+            graphics.renderAnim(x, y, unit->atk, unit->curPos->center.first > tile->center.first);
             graphics.presentScene();
 
             unit->atk->tick();
@@ -334,13 +339,17 @@ struct Game
         unit->initTexture(graphics);
     }
 
-    void hitAnim(Unit* unit, Graphics& graphics)
+    void hitAnim(Unit* unit, Graphics& graphics, MapTile* tile)
     {
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
         unit->texture = NULL;
         do
         {
-            graphics.renderAnim(x, y, unit->hit);
+            graphics.prepareScene();
+            draw(graphics);
+            graphics.renderAnim(x, y, unit->atk, unit->curPos->center.first > tile->center.first);
+            graphics.presentScene();
+
             unit->hit->tick();
             SDL_Delay(100);
         }while(unit->hit->currentFrame != 0);
@@ -377,8 +386,8 @@ struct Game
             if (unitTile != NULL && steps + 1 <= unit->steps && unitTile->player != unit->player)
             {
                 cerr << "ATK\n";
-                atkAnim(unit, graphics);
-                hitAnim(unitTile, graphics);
+                atkAnim(unit, graphics, unitTile->curPos);
+                hitAnim(unitTile, graphics, unitTile->curPos);
                 unitTile->hp -= unit->dame;
                 unit->steps -= steps + 1;
                 if (unitTile->hp <= 0)
