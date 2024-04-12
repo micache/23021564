@@ -4,6 +4,7 @@
 #include <string>
 
 #include "defs.h"
+#include "structs.h"
 
 using namespace std;
 
@@ -47,6 +48,27 @@ string convertToString(int id)
     string tdame = "DAMAGE: " + to_string(CLASS_DAME[id]);
     string tstep = "STEPS PER TURN: " + to_string(CLASS_STEP[id]);
     return tname + "\n" + thp + "\n" + tdame + "\n" + tstep;
+}
+
+//for the minimax algorithm
+bool gameOver(const vector<Unit*>& units)
+{
+    return (units[0]->hp <= 0 || units[1]->hp <= 0);
+}
+
+ld eval(const vector<Unit*>& units)
+{
+    if (units[0]->hp <= 0)
+        return INF;
+    if (units[1]->hp <= 0)
+        return -INF;
+    for (auto& u : units)
+    {
+        if (u->player)
+        {
+
+        }
+    }
 }
 
 #endif

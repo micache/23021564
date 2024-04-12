@@ -202,8 +202,11 @@ struct Graphics
                "Could not load sound! SDL_mixer Error: %s", Mix_GetError());
         }
     }
-    void play(Mix_Chunk* gChunk) {
-        if (gChunk != nullptr) {
+
+    void play(Mix_Chunk* gChunk)
+    {
+        if (gChunk != nullptr)
+        {
             Mix_PlayChannel( -1, gChunk, 0 );
         }
     }

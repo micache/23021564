@@ -25,6 +25,42 @@ struct Game
     vector<Unit*> allUnits;
     bool turn;
 
+    bool showMenu(Graphics& graphics)
+    {
+        string filePath = "assets/background_menu.png";
+        SDL_Texture *texture = graphics.loadTexture(filePath.c_str());
+        SDL_RenderCopy(graphics.renderer, texture, NULL, NULL);
+
+        filePath = "assets/1player_button_menu.png";
+        texture = graphics.loadTexture(filePath.c_str());
+        graphics.renderTexture(texture, 530, 320, 222, 85, graphics.renderer);
+
+        filePath = "assets/2players_button_menu.png";
+        texture = graphics.loadTexture(filePath.c_str());
+        graphics.renderTexture(texture, 530, 420, 222, 85, graphics.renderer);
+
+        filePath = "assets/quit_button_menu.png";
+        texture = graphics.loadTexture(filePath.c_str());
+        graphics.renderTexture(texture, 530, 515, 222, 85, graphics.renderer);
+
+        graphics.presentScene();
+
+        Input input;
+        while (1)
+        {
+            pair<int, int> mousePos = input.getMousePos();
+            //1 player
+            if (isInRect(mousePos.first, mousePos.second, 530, 320, 85, 222))
+                return 1;
+            //2 players
+            if (isInRect(mousePos.first, mousePos.second, 530, 420, 85, 222))
+                return 0;
+            //quit
+            if (isInRect(mousePos.first, mousePos.second, 530, 515, 85, 222))
+                exit(0);
+        }
+    }
+
     void genHexagon(float centerX, float centerY)
     {
         MapTile* cur = new MapTile();
@@ -164,12 +200,12 @@ struct Game
 
             //fill remain triangle
             colorTriangle(renderer, hex->points[2].first, hex->points[2].second,
-                                    hex->points[3].first, hex->points[3].second,
-                                    hex->points[4].first, hex->points[4].second);
+                          hex->points[3].first, hex->points[3].second,
+                          hex->points[4].first, hex->points[4].second);
 
             colorTriangle(renderer, hex->points[1].first, hex->points[1].second,
-                                    hex->points[0].first, hex->points[0].second,
-                                    hex->points[5].first, hex->points[5].second);
+                          hex->points[0].first, hex->points[0].second,
+                          hex->points[5].first, hex->points[5].second);
 
             //draw boundary
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -291,7 +327,7 @@ struct Game
         int distx = abs(x - endX), disty = abs(y - endY);
         unit->texture = NULL;
 
-        Mix_Music *walkSound = graphics.loadMusic("assets/walk_sound.mp3");
+        Mix_Chunk *walkSound = graphics.loadSound("assets/walk_sound.mp3");
         graphics.play(walkSound);
 
         while (distx || disty)
@@ -317,6 +353,8 @@ struct Game
                 break;
             SDL_Delay(10);
         }
+
+        Mix_FreeChunk(walkSound);
         unit->resetAnim();
         unit->initTexture(graphics);
     }
@@ -325,6 +363,10 @@ struct Game
     {
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
         unit->texture = NULL;
+
+        Mix_Chunk *atkSound = graphics.loadSound(("assets/" + unit->name + "_atk_sound.mp3").c_str());
+        graphics.play(atkSound);
+
         do
         {
             graphics.prepareScene();
@@ -334,7 +376,10 @@ struct Game
 
             unit->atk->tick();
             SDL_Delay(30);
-        }while(unit->atk->currentFrame != 0);
+        }
+        while(unit->atk->currentFrame != 0);
+
+        Mix_FreeChunk(atkSound);
         unit->resetAnim();
         unit->initTexture(graphics);
     }
@@ -343,6 +388,10 @@ struct Game
     {
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
         unit->texture = NULL;
+
+        Mix_Chunk *hitSound = graphics.loadSound("assets/hit_sound.mp3");
+        graphics.play(hitSound);
+
         do
         {
             graphics.prepareScene();
@@ -352,7 +401,10 @@ struct Game
 
             unit->hit->tick();
             SDL_Delay(100);
-        }while(unit->hit->currentFrame != 0);
+        }
+        while(unit->hit->currentFrame != 0);
+
+        Mix_FreeChunk(hitSound);
         unit->resetAnim();
         unit->initTexture(graphics);
     }
@@ -485,7 +537,8 @@ struct Game
                     {
                         inQueue[turn] = i;
                         turnLeft[turn] = CLASS_COST[i];
-                    } else
+                    }
+                    else
                     {
                         for (auto& unit : allUnits)
                         {
@@ -511,8 +564,8 @@ struct Game
         if (inQueue[turn] != -1 && turnLeft[turn] == 0)
         {
             Unit* newUnit = new Unit(inQueue[turn], center[turn]->curPos, turn, &unitAnim[inQueue[turn] - 1][turn][0],
-                                                                                &unitAnim[inQueue[turn] - 1][turn][1],
-                                                                                &unitAnim[inQueue[turn] - 1][turn][2]);
+                                     &unitAnim[inQueue[turn] - 1][turn][1],
+                                     &unitAnim[inQueue[turn] - 1][turn][2]);
             newUnit->initTexture(graphics);
             allUnits.push_back(newUnit);
             inQueue[turn] = -1;
@@ -537,7 +590,8 @@ struct Game
                 }
 
                 unit = unitOnTile(tileClicked(mousePos.first, mousePos.second));
-            }while (unit == NULL || unit->player != turn);
+            }
+            while (unit == NULL || unit->player != turn);
 
             if (unit->name == "center")
             {
@@ -547,6 +601,75 @@ struct Game
             if (unit != NULL)
                 Move(unit, graphics);
         }
+    }
+
+    ld Attp(int i, const int& dep, const ld& alpha, const ld& beta, bool player)
+    {
+        if (i == allUnits.size())
+        {
+            return minimax(dep - 1, alpha, beta, !player);
+        }
+        Unit* unit = allUnits[i];
+        for (const auto& tile : allMapTile)
+        {
+            ld dist = distEuclid(unit->curPos->center, tile->center);
+            if (numSteps(dist) > unit->step)
+                continue;
+            Unit* unitTile = unitOnTile(tile);
+            //WALK
+            if (unitTile == NULL)
+            {
+                MapTile* oldtile = unit->curPos;
+                unit->curPos = tile;
+                Attp(i + 1, dep, alpha, beta, player);
+                unit->curPos = oldtile;
+            }
+            else if (numSteps(dist) + 1 <= unit->steps)
+            {
+                if (unitTile->player == player)
+                    Attp(i + 1, dep, alpha, beta, player);
+                else
+                {
+                    int oldhp = unitTile->hp;
+                    unitTile->hp -= unit->dame;
+                    Attp(i + 1, dep, alpha, beta, player);
+                    unitTile->hp = oldhp;
+                }
+            }
+        }
+    }
+
+    //alpha beta pruning
+    ld minimax(int dep, ld alpha, ld beta, bool player)
+    {
+        if (dep == 0 || gameOver(allUnits))
+        {
+            return eval(units);
+        }
+        if (player)
+        {
+            ld maxv = -INF;
+            ld ev = Attp(0, myunit, dep);
+            maxv = max(maxv, ev);
+            alpha = max(alpha, ev);
+            if (beta <= alpha)
+                break;
+            return maxv;
+        } else
+        {
+            ld minv = +INF;
+            ld ev = Attp(0, myunit, dep);
+            minv = min(minv, ev);
+            beta = min(beta, ev);
+            if (beta <= alpha)
+                break;
+            return minv;
+        }
+    }
+
+    void botPlay(Graphics& graphics)
+    {
+        minimax(allUnits, 2, -INF, INF, 1);
     }
 };
 

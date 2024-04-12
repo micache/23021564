@@ -26,7 +26,7 @@ const std::string CLASS_NAME[NUM_CLASS] = {"center", "archer", "swordsman", "sco
 const int CLASS_HP[NUM_CLASS] = {200, 40, 65, 45, 70};
 const int CLASS_DAME[NUM_CLASS] = {10, 7, 4, 2, 6};
 const int CLASS_COST[NUM_CLASS] = {0, 1, 1, 1, 1};
-const int CLASS_STEP[NUM_CLASS] = {0, 2, 1, 3, 2};
+const int CLASS_STEP[NUM_CLASS] = {0, 7, 7, 7, 7};
 
 #define ON_MAP_TEXTURE_SIZE 54
 #define ON_MENU_TEXTURE_SIZE 150
@@ -123,5 +123,7 @@ const int KNIGHT_ATK_FRAMES = sizeof(KNIGHT_ATK_CLIP)/sizeof(int)/4;
 const int KNIGHT_HIT_CLIP[][4] = {{0, 512, 64, 64},
                                      {64, 512, 64, 64}};
 const int KNIGHT_HIT_FRAMES = sizeof(KNIGHT_HIT_CLIP)/sizeof(int)/4;
+
+#define ld long double
 
 #endif
