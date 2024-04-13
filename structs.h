@@ -71,7 +71,7 @@ struct Unit
     int hp, dame, steps, id;
     bool player;
     Sprite *walk, *atk, *hit;
-    SDL_Texture* texture;
+    SDL_Texture* texture = NULL;
 
     Unit (int id, MapTile* _curPos, bool side, Sprite* _walk, Sprite* _atk, Sprite* _hit)
     {

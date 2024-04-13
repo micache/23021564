@@ -51,10 +51,16 @@ struct Game
             pair<int, int> mousePos = input.getMousePos();
             //1 player
             if (isInRect(mousePos.first, mousePos.second, 530, 320, 85, 222))
+            {
+                SDL_DestroyTexture(texture);
                 return 1;
+            }
             //2 players
             if (isInRect(mousePos.first, mousePos.second, 530, 420, 85, 222))
+            {
+                SDL_DestroyTexture(texture);
                 return 0;
+            }
             //quit
             if (isInRect(mousePos.first, mousePos.second, 530, 515, 85, 222))
                 exit(0);
@@ -297,7 +303,7 @@ struct Game
         {
             if (unit->curPos == tile)
             {
-                cerr << "Clicked on " << unit->name << '\n';
+                //cerr << "Clicked on " << unit->name << '\n';
                 return unit;
             }
         }
@@ -312,7 +318,6 @@ struct Game
             {
                 swap(un, allUnits.back());
                 allUnits.pop_back();
-                delete(un);
                 return;
             }
         }
@@ -320,16 +325,16 @@ struct Game
 
     void walkAnim(Unit* unit, MapTile* tile, Graphics& graphics)
     {
-        const int STEP = 7;
+        const int STEP = 15;
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
         float endX = tile->center.first - ON_MAP_TEXTURE_SIZE / 2, endY = tile->center.second - ON_MAP_TEXTURE_SIZE / 2;
         int vx = x < endX ? 1 : -1, vy = y < endY ? 1 : -1;
         int distx = abs(x - endX), disty = abs(y - endY);
-        unit->texture = NULL;
 
         Mix_Chunk *walkSound = graphics.loadSound("assets/walk_sound.mp3");
         graphics.play(walkSound);
 
+        SDL_DestroyTexture(unit->texture);
         while (distx || disty)
         {
             cerr << distx << ' ' << disty << '\n';
@@ -351,7 +356,6 @@ struct Game
             }
             if (distx < STEP && disty < STEP)
                 break;
-            SDL_Delay(10);
         }
 
         Mix_FreeChunk(walkSound);
@@ -362,11 +366,11 @@ struct Game
     void atkAnim(Unit* unit, Graphics& graphics, MapTile* tile)
     {
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
-        unit->texture = NULL;
 
         Mix_Chunk *atkSound = graphics.loadSound(("assets/" + unit->name + "_atk_sound.mp3").c_str());
         graphics.play(atkSound);
 
+        SDL_DestroyTexture(unit->texture);
         do
         {
             graphics.prepareScene();
@@ -375,7 +379,6 @@ struct Game
             graphics.presentScene();
 
             unit->atk->tick();
-            SDL_Delay(30);
         }
         while(unit->atk->currentFrame != 0);
 
@@ -387,11 +390,14 @@ struct Game
     void hitAnim(Unit* unit, Graphics& graphics, MapTile* tile)
     {
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
-        unit->texture = NULL;
 
         Mix_Chunk *hitSound = graphics.loadSound("assets/hit_sound.mp3");
         graphics.play(hitSound);
 
+        if (unit->name == "center")
+            return;
+
+        SDL_DestroyTexture(unit->texture);
         do
         {
             graphics.prepareScene();
@@ -400,7 +406,6 @@ struct Game
             graphics.presentScene();
 
             unit->hit->tick();
-            SDL_Delay(100);
         }
         while(unit->hit->currentFrame != 0);
 
@@ -457,15 +462,27 @@ struct Game
         }
     }
 
+    void clearTexture(vector<SDL_Texture*>& vc)
+    {
+        while (!vc.empty())
+        {
+            SDL_DestroyTexture(vc.back());
+            vc.pop_back();
+        }
+    }
+
     int inQueue[2] = {-1, -1}, turnLeft[2] = {-1, -1};
 
     Unit* showClassMenu()
     {
+        vector<SDL_Texture*> used;
+
         Graphics graphics;
         graphics.init("Class Menu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, MENU_SCREEN_WIDTH, MENU_SCREEN_HEIGHT, SDL_WINDOW_INPUT_FOCUS);
 
         string filePath = "assets/background_class_menu.jpg";
         SDL_Texture *texture = graphics.loadTexture(filePath.c_str());
+        used.push_back(texture);
         SDL_RenderCopy(graphics.renderer, texture, NULL, NULL);
 
         string fontPath = "assets/classMenu_font.ttf";
@@ -475,6 +492,7 @@ struct Game
         {
             filePath = "assets/" + CLASS_NAME[i] + "_icon_" + std::to_string(turn) + ".png";
             texture = graphics.loadTexture(filePath.c_str());
+            used.push_back(texture);
             graphics.renderTexture(texture, x, y, ON_MENU_TEXTURE_SIZE, ON_MENU_TEXTURE_SIZE, graphics.renderer);
             iconPos[i].x = x;
             iconPos[i].y = y;
@@ -502,6 +520,7 @@ struct Game
         {
             filePath = "assets/" + CLASS_NAME[inQueue[turn]] + "_icon_" + std::to_string(turn) + ".png";
             texture = graphics.loadTexture(filePath.c_str());
+            used.push_back(texture);
             graphics.renderTexture(texture, 700, 430, 50, 50, graphics.renderer);
         }
 
@@ -516,6 +535,7 @@ struct Game
                 cerr << "Finished: " << unit->name << "\n";
                 //graphics.showText(fontPath, 15, unit->name, Xleft, 490, 32, 32);
                 unit->initTexture(graphics);
+                //used.push_back(unit->texture);
                 graphics.renderTexture(unit->texture, Xleft, 490, 40, 40, graphics.renderer);
                 Xleft += 42;
             }
@@ -544,20 +564,21 @@ struct Game
                         {
                             if (unit->curPos == center[turn]->curPos && unit->name == CLASS_NAME[i])
                             {
+                                clearTexture(used);
                                 graphics.quit();
                                 return unit;
                             }
                         }
                     }
+                    clearTexture(used);
                     graphics.quit();
                     return NULL;
                 }
             }
         }
-
     }
 
-    void playTurn(Graphics& graphics)
+    void checkNewUnit(Graphics& graphics)
     {
         turnLeft[turn]--;
 
@@ -570,7 +591,11 @@ struct Game
             allUnits.push_back(newUnit);
             inQueue[turn] = -1;
         }
+    }
 
+    void playTurn(Graphics& graphics)
+    {
+        checkNewUnit(graphics);
         while (1)
         {
             graphics.prepareScene();
@@ -603,13 +628,16 @@ struct Game
         }
     }
 
-    void Attp(int i, const int& dep, ld& alpha, ld& beta, bool player, ld& res, vector<MapTile*>& trace, vector<MapTile*>& best)
+    int cnt = 0;
+
+    void Attp(int i, int dep, ld& alpha, ld& beta, bool player, ld& res, vector<MapTile*>& trace, vector<MapTile*>& best)
     {
-        if (beta <= alpha)
+        cnt++;
+        if (beta <= alpha || cnt > 1e6)
         {
             return;
         }
-        if (i == allUnits.size())
+        if (i == (int)allUnits.size())
         {
             ld val = minimax(dep - 1, alpha, beta, !player);
             if (player)
@@ -636,15 +664,16 @@ struct Game
         if (unit->player != player)
         {
             trace.push_back(unit->curPos);
-            Attp(i + 1, dep, alpha, beta, player, res);
+            Attp(i + 1, dep, alpha, beta, player, res, trace, best);
             trace.pop_back();
             return;
         }
-        ld res = -INF;
         for (const auto& tile : allMapTile)
         {
+            if (beta <= alpha || cnt > 1e6)
+                return;
             ld dist = distEuclid(unit->curPos->center, tile->center);
-            if (numSteps(dist) > unit->step)
+            if (numSteps(dist) > unit->steps)
                 continue;
             Unit* unitTile = unitOnTile(tile);
             //WALK
@@ -653,7 +682,7 @@ struct Game
                 MapTile* oldtile = unit->curPos;
                 unit->curPos = tile;
                 trace.push_back(unit->curPos);
-                Attp(i + 1, dep, alpha, beta, player, res);
+                Attp(i + 1, dep, alpha, beta, player, res, trace, best);
                 trace.pop_back();
                 unit->curPos = oldtile;
             }
@@ -662,15 +691,15 @@ struct Game
                 if (unitTile->player == player)
                 {
                     trace.push_back(unit->curPos);
-                    Attp(i + 1, dep, alpha, beta, player, res);
+                    Attp(i + 1, dep, alpha, beta, player, res, trace, best);
                     trace.pop_back();
                 }
                 else
                 {
                     int oldhp = unitTile->hp;
                     unitTile->hp -= unit->dame;
-                    trace.push_back(unit->curPos);
-                    Attp(i + 1, dep, alpha, beta, player, res);
+                    trace.push_back(unitTile->curPos);
+                    Attp(i + 1, dep, alpha, beta, player, res, trace, best);
                     trace.pop_back();
                     unitTile->hp = oldhp;
                 }
@@ -685,11 +714,14 @@ struct Game
     {
         if (dep == 0 || gameOver(allUnits))
         {
-            return eval(units);
+            return eval(allUnits);
         }
         vector<MapTile*> best;
         ld resv = player ? -INF : INF;
-        Attp(0, dep, alpha, beta, player, resv, best);
+        vector<MapTile*> trace;
+        //move unit
+        Attp(2, dep, alpha, beta, player, resv, trace, best);
+
         if (dep == TREE_DEPTH)
             bestMove = best;
         return resv;
@@ -697,14 +729,52 @@ struct Game
 
     void botPlay(Graphics& graphics)
     {
-        minimax(allUnits, 2, -INF, INF, 1);
-        for (int i = 0; i < allUnits.size(); i++)
+        checkNewUnit(graphics);
+
+        //create new unit
+        if (inQueue[1] == -1)
+        {
+            int id, minv = INF;
+            for (int i = 1; i < 5; i++)
+            {
+                ld sum = 0;
+                int nearest = INF;
+                for (auto& v : allUnits)
+                {
+                    if (!v->player)
+                    {
+                        int step = numSteps(distEuclid(allUnits[1]->curPos->center, v->curPos->center)) + CLASS_COST[i];
+                        if (step < nearest)
+                        {
+                            nearest = step;
+                            sum = (step * step);
+                        }
+                        if (step == nearest)
+                            sum += (step * step);
+                    }
+                }
+                if (minv > sum)
+                {
+                    minv = sum;
+                    id = i;
+                }
+            }
+            inQueue[1] = id;
+            turnLeft[1] = CLASS_COST[id];
+        }
+
+        cnt = 0;
+        random_shuffle(allMapTile.begin(), allMapTile.end());
+        cerr << minimax(2, -INF, INF, 1) << '\n';
+
+        for (int i = 2; i < (int)allUnits.size(); i++)
         {
             auto unit = allUnits[i];
             if (!unit->player)
                 continue;
-            Move(unit, bestMove[i], graphics);
+            Move(unit, bestMove[i - 2], graphics);
         }
+        cerr << "End player " << 1 << " turn\n";
     }
 };
 

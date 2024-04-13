@@ -5,13 +5,13 @@
 	"graphics.h"
 	"logic.h"
 
-1712937679 source:d:\project\game\23021564\main.cpp
+1712997107 source:d:\project\game\23021564\main.cpp
 	<iostream>
 	<SDL.h>
 	"graphics.h"
 	"logic.h"
 
-1712592916 d:\project\game\23021564\structs.h
+1713008534 d:\project\game\23021564\structs.h
 	<SDL.h>
 	<SDL_image.h>
 	"defs.h"
@@ -19,11 +19,11 @@
 	<string>
 	<vector>
 
-1712919693 d:\project\game\23021564\defs.h
+1712996773 d:\project\game\23021564\defs.h
 	<tuple>
 	<string>
 
-1712911966 d:\project\game\23021564\graphics.h
+1712992274 d:\project\game\23021564\graphics.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
@@ -39,7 +39,7 @@
 1712238601 d:\project\game\23021564\input.h
 	<SDL.h>
 
-1712938121 d:\project\game\23021564\logic.h
+1713010204 d:\project\game\23021564\logic.h
 	<vector>
 	<ctime>
 	<chrono>
@@ -54,9 +54,11 @@
 	"utils.h"
 	"input.h"
 
-1712238601 d:\project\game\23021564\utils.h
+1713008833 d:\project\game\23021564\utils.h
 	<string>
+	<assert.h>
 	"defs.h"
+	"structs.h"
 
 1712972804 d:\cplusplus\game\graphics.h
 	<SDL.h>

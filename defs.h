@@ -31,7 +31,7 @@ const int CLASS_STEP[NUM_CLASS] = {0, 7, 7, 7, 7};
 #define ON_MAP_TEXTURE_SIZE 54
 #define ON_MENU_TEXTURE_SIZE 150
 
-const float DIST_BETWEEN_TILE[4] = {0, 86.4523, 172.905, 259.357};
+const float DIST_BETWEEN_TILE = 86.452;
 
 #define HP_BAR_WIDTH 40
 #define HP_BAR_HEIGHT 6

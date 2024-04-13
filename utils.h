@@ -2,6 +2,7 @@
 #define _UTILS__H
 
 #include <string>
+#include <assert.h>
 
 #include "defs.h"
 #include "structs.h"
@@ -33,12 +34,7 @@ float distEuclid(pair<float, float> x1, pair<float, float> x2)
 
 int numSteps(float dist)
 {
-    for (int i = 0; i < 4; i++)
-    {
-        if (dist <= DIST_BETWEEN_TILE[i])
-            return i;
-    }
-    return INF;
+    return ceil(dist / DIST_BETWEEN_TILE);
 }
 
 string convertToString(int id)
@@ -71,28 +67,23 @@ ld eval(const vector<Unit*>& units)
     if (units[1]->hp <= 0)
         return -INF;
     ld res = 0;
+    int sumhplost = 0, sumhp = 0;
     for (auto& u : units)
     {
+        if (u->name == "center")
+            continue;
         if (u->player)
         {
+            assert(numSteps(distEuclid(u->curPos->center, units[0]->curPos->center)) > 0);
             res += (ld)1 / numSteps(distEuclid(u->curPos->center, units[0]->curPos->center));
-            ld sum = 0;
-            int nearest = INF;
-            for (auto& v : units)
-            {
-                if (!v->player)
-                {
-                    int step = numSteps(distEuclid(u->curPos->center, v->curPos->center));
-                    if (step < nearest)
-                        sum = ((ld)1 + defeat(u, v)) / (step * step);
-                    if (step == nearest)
-                        sum += ((ld)1 + defeat(u, v)) / (step * step);
-                }
-            }
-            res -= sum;
+        } else
+        {
+            sumhplost += CLASS_HP[u->id] - u->hp;
+            sumhp += CLASS_HP[u->id];
         }
     }
-    return res;
+    int hpcenterlost = max(1, CLASS_HP[0] - units[0]->hp);
+    return res - 1 / (hpcenterlost * hpcenterlost) + (sumhp == 0 ? 0 : (ld)sumhplost / sumhp);
 }
 
 #endif

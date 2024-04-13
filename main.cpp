@@ -14,8 +14,11 @@ int main(int argc, char* argv[]) {
     Game game;
     game.init(graphics);
 
+    //SDL_Delay(100000);
+
     bool t = game.showMenu(graphics);
     bool turn = 0;
+
     while (1)
     {
         game.initTurn(turn, graphics);
