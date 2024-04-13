@@ -56,19 +56,43 @@ bool gameOver(const vector<Unit*>& units)
     return (units[0]->hp <= 0 || units[1]->hp <= 0);
 }
 
+//u2 di truoc
+bool defeat(const Unit* u1, const Unit* u2)
+{
+    int turn1 = (u1->hp + u2->dame - 1) / u2->dame;
+    int turn2 = (u2->hp + u1->dame - 1) / u1->dame;
+    return turn1 <= turn2;
+}
+
 ld eval(const vector<Unit*>& units)
 {
     if (units[0]->hp <= 0)
         return INF;
     if (units[1]->hp <= 0)
         return -INF;
+    ld res = 0;
     for (auto& u : units)
     {
         if (u->player)
         {
-
+            res += (ld)1 / numSteps(distEuclid(u->curPos->center, units[0]->curPos->center));
+            ld sum = 0;
+            int nearest = INF;
+            for (auto& v : units)
+            {
+                if (!v->player)
+                {
+                    int step = numSteps(distEuclid(u->curPos->center, v->curPos->center));
+                    if (step < nearest)
+                        sum = ((ld)1 + defeat(u, v)) / (step * step);
+                    if (step == nearest)
+                        sum += ((ld)1 + defeat(u, v)) / (step * step);
+                }
+            }
+            res -= sum;
         }
     }
+    return res;
 }
 
 #endif

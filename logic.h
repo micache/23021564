@@ -409,51 +409,51 @@ struct Game
         unit->initTexture(graphics);
     }
 
-    void Move(Unit* unit, Graphics& graphics)
+    MapTile* getPosClicked()
     {
         Input input;
-        while (1)
+        pair<int, int> mouse = input.getMousePos();
+        MapTile* tile = tileClicked(mouse.first, mouse.second);
+        return tile;
+    }
+
+    void Move(Unit* unit, MapTile* tile, Graphics& graphics)
+    {
+        Unit* unitTile = unitOnTile(tile);
+
+        float dist = distEuclid(unit->curPos->center, tile->center);
+        int steps = numSteps(dist);
+        cerr << steps << '\n';
+
+        //walk
+        if (unitTile == NULL && steps <= unit->steps)
         {
-            pair<int, int> mouse = input.getMousePos();
+            cerr << "WALK\n";
+            walkAnim(unit, tile, graphics);
+            unit->steps -= steps;
+            unit->curPos = tile;
+            return;
+        }
 
-            MapTile* tile = tileClicked(mouse.first, mouse.second);
-
-            Unit* unitTile = unitOnTile(tile);
-
-            float dist = distEuclid(unit->curPos->center, tile->center);
-            int steps = numSteps(dist);
-            cerr << steps << '\n';
-
-            //walk
-            if (unitTile == NULL && steps <= unit->steps)
+        //attack other unit
+        if (unitTile != NULL && steps + 1 <= unit->steps && unitTile->player != unit->player)
+        {
+            cerr << "ATK\n";
+            atkAnim(unit, graphics, unitTile->curPos);
+            hitAnim(unitTile, graphics, unitTile->curPos);
+            unitTile->hp -= unit->dame;
+            unit->steps -= steps + 1;
+            if (unitTile->hp <= 0)
             {
-                cerr << "WALK\n";
-                walkAnim(unit, tile, graphics);
-                unit->steps -= steps;
-                unit->curPos = tile;
-                return;
+                removeUnit(unitTile);
             }
+            return;
+        }
 
-            //attack other unit
-            if (unitTile != NULL && steps + 1 <= unit->steps && unitTile->player != unit->player)
-            {
-                cerr << "ATK\n";
-                atkAnim(unit, graphics, unitTile->curPos);
-                hitAnim(unitTile, graphics, unitTile->curPos);
-                unitTile->hp -= unit->dame;
-                unit->steps -= steps + 1;
-                if (unitTile->hp <= 0)
-                {
-                    removeUnit(unitTile);
-                }
-                return;
-            }
-
-            //don't move (click on itself)
-            if (steps == 0)
-            {
-                return;
-            }
+        //don't move (click on itself)
+        if (steps == 0)
+        {
+            return;
         }
     }
 
@@ -599,17 +599,48 @@ struct Game
             }
 
             if (unit != NULL)
-                Move(unit, graphics);
+                Move(unit, getPosClicked(), graphics);
         }
     }
 
-    ld Attp(int i, const int& dep, const ld& alpha, const ld& beta, bool player)
+    void Attp(int i, const int& dep, ld& alpha, ld& beta, bool player, ld& res, vector<MapTile*>& trace, vector<MapTile*>& best)
     {
+        if (beta <= alpha)
+        {
+            return;
+        }
         if (i == allUnits.size())
         {
-            return minimax(dep - 1, alpha, beta, !player);
+            ld val = minimax(dep - 1, alpha, beta, !player);
+            if (player)
+            {
+                if (res < val)
+                {
+                    best = trace;
+                    res = val;
+                }
+                alpha = max(alpha, val);
+            }
+            else
+            {
+                if (res > val)
+                {
+                    best = trace;
+                    res = val;
+                }
+                beta = min(beta, val);
+            }
+            return;
         }
         Unit* unit = allUnits[i];
+        if (unit->player != player)
+        {
+            trace.push_back(unit->curPos);
+            Attp(i + 1, dep, alpha, beta, player, res);
+            trace.pop_back();
+            return;
+        }
+        ld res = -INF;
         for (const auto& tile : allMapTile)
         {
             ld dist = distEuclid(unit->curPos->center, tile->center);
@@ -621,23 +652,33 @@ struct Game
             {
                 MapTile* oldtile = unit->curPos;
                 unit->curPos = tile;
-                Attp(i + 1, dep, alpha, beta, player);
+                trace.push_back(unit->curPos);
+                Attp(i + 1, dep, alpha, beta, player, res);
+                trace.pop_back();
                 unit->curPos = oldtile;
             }
             else if (numSteps(dist) + 1 <= unit->steps)
             {
                 if (unitTile->player == player)
-                    Attp(i + 1, dep, alpha, beta, player);
+                {
+                    trace.push_back(unit->curPos);
+                    Attp(i + 1, dep, alpha, beta, player, res);
+                    trace.pop_back();
+                }
                 else
                 {
                     int oldhp = unitTile->hp;
                     unitTile->hp -= unit->dame;
-                    Attp(i + 1, dep, alpha, beta, player);
+                    trace.push_back(unit->curPos);
+                    Attp(i + 1, dep, alpha, beta, player, res);
+                    trace.pop_back();
                     unitTile->hp = oldhp;
                 }
             }
         }
     }
+
+    vector<MapTile*> bestMove;
 
     //alpha beta pruning
     ld minimax(int dep, ld alpha, ld beta, bool player)
@@ -646,30 +687,24 @@ struct Game
         {
             return eval(units);
         }
-        if (player)
-        {
-            ld maxv = -INF;
-            ld ev = Attp(0, myunit, dep);
-            maxv = max(maxv, ev);
-            alpha = max(alpha, ev);
-            if (beta <= alpha)
-                break;
-            return maxv;
-        } else
-        {
-            ld minv = +INF;
-            ld ev = Attp(0, myunit, dep);
-            minv = min(minv, ev);
-            beta = min(beta, ev);
-            if (beta <= alpha)
-                break;
-            return minv;
-        }
+        vector<MapTile*> best;
+        ld resv = player ? -INF : INF;
+        Attp(0, dep, alpha, beta, player, resv, best);
+        if (dep == TREE_DEPTH)
+            bestMove = best;
+        return resv;
     }
 
     void botPlay(Graphics& graphics)
     {
         minimax(allUnits, 2, -INF, INF, 1);
+        for (int i = 0; i < allUnits.size(); i++)
+        {
+            auto unit = allUnits[i];
+            if (!unit->player)
+                continue;
+            Move(unit, bestMove[i], graphics);
+        }
     }
 };
 

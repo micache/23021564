@@ -125,5 +125,6 @@ const int KNIGHT_HIT_CLIP[][4] = {{0, 512, 64, 64},
 const int KNIGHT_HIT_FRAMES = sizeof(KNIGHT_HIT_CLIP)/sizeof(int)/4;
 
 #define ld long double
+const int TREE_DEPTH = 2;
 
 #endif
