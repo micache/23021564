@@ -23,7 +23,7 @@ const std::tuple<int, int, int> MAP_TILE_COLOR[3] = {{55, 105, 33}, {81, 197, 30
 
 #define NUM_CLASS 5
 const std::string CLASS_NAME[NUM_CLASS] = {"center", "archer", "swordsman", "scout", "knight"};
-const int CLASS_HP[NUM_CLASS] = {200, 40, 65, 45, 70};
+const int CLASS_HP[NUM_CLASS] = {1, 40, 65, 45, 70};
 const int CLASS_DAME[NUM_CLASS] = {10, 7, 4, 2, 6};
 const int CLASS_COST[NUM_CLASS] = {0, 1, 1, 1, 1};
 const int CLASS_STEP[NUM_CLASS] = {0, 7, 7, 7, 7};
@@ -126,5 +126,6 @@ const int KNIGHT_HIT_FRAMES = sizeof(KNIGHT_HIT_CLIP)/sizeof(int)/4;
 
 #define ld long double
 const int TREE_DEPTH = 2;
+const int MAX_BRANCH_REACH = 1e6;
 
 #endif

@@ -45,6 +45,9 @@ struct Game
 
         graphics.presentScene();
 
+        Mix_Music* music = graphics.loadMusic("assets/menu_music.mp3");
+        graphics.play(music);
+
         Input input;
         while (1)
         {
@@ -53,12 +56,14 @@ struct Game
             if (isInRect(mousePos.first, mousePos.second, 530, 320, 85, 222))
             {
                 SDL_DestroyTexture(texture);
+                Mix_FreeMusic(music);
                 return 1;
             }
             //2 players
             if (isInRect(mousePos.first, mousePos.second, 530, 420, 85, 222))
             {
                 SDL_DestroyTexture(texture);
+                Mix_FreeMusic(music);
                 return 0;
             }
             //quit
@@ -270,6 +275,20 @@ struct Game
         drawUnits(graphics);
     }
 
+    void drawPlayerTurn(Graphics& graphics)
+    {
+        string filePath = "assets/player_" + std::to_string(turn) + "_turn.png";
+        SDL_Texture* texture = graphics.loadTexture(filePath.c_str());
+        graphics.prepareScene();
+        draw(graphics);
+        graphics.renderTexture(texture, SCREEN_WIDTH / 2 - 445 / 2, SCREEN_HEIGHT / 2 - 220 / 2, 445, 219, graphics.renderer);
+        graphics.presentScene();
+
+        SDL_Delay(500);
+
+        SDL_DestroyTexture(texture);
+    }
+
     void initTurn(bool _turn, Graphics& graphics)
     {
         turn = _turn;
@@ -280,6 +299,10 @@ struct Game
                 unit->steps = CLASS_STEP[unit->id];
             }
         }
+
+        drawPlayerTurn(graphics);
+        Mix_Music* music = graphics.loadMusic("assets/background_music.mp3");
+        graphics.play(music);
     }
 
     MapTile* tileClicked(int x, int y)
@@ -450,6 +473,17 @@ struct Game
             unit->steps -= steps + 1;
             if (unitTile->hp <= 0)
             {
+                if (unitTile->name == "center")
+                {
+                    SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 0);
+                    string filePath = "assets/winner_" + std::to_string(turn) + ".png";
+                    SDL_Texture* texture = graphics.loadTexture(filePath.c_str());
+                    SDL_RenderClear(graphics.renderer);
+                    graphics.renderTexture(texture, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, graphics.renderer);
+                    graphics.presentScene();
+                    SDL_Delay(5000);
+                    exit(0);
+                }
                 removeUnit(unitTile);
             }
             return;
@@ -590,6 +624,11 @@ struct Game
             newUnit->initTexture(graphics);
             allUnits.push_back(newUnit);
             inQueue[turn] = -1;
+
+            Mix_Chunk *sound = graphics.loadSound("assets/unit_creation_sound.mp3");
+            graphics.play(sound);
+            SDL_Delay(1000);
+            Mix_FreeChunk(sound);
         }
     }
 
@@ -621,10 +660,14 @@ struct Game
             if (unit->name == "center")
             {
                 unit = showClassMenu();
+                if (unit != NULL)
+                    unit->initTexture(graphics);
             }
 
             if (unit != NULL)
+            {
                 Move(unit, getPosClicked(), graphics);
+            }
         }
     }
 
@@ -633,7 +676,7 @@ struct Game
     void Attp(int i, int dep, ld& alpha, ld& beta, bool player, ld& res, vector<MapTile*>& trace, vector<MapTile*>& best)
     {
         cnt++;
-        if (beta <= alpha || cnt > 1e6)
+        if (beta <= alpha || cnt > MAX_BRANCH_REACH)
         {
             return;
         }
@@ -670,7 +713,7 @@ struct Game
         }
         for (const auto& tile : allMapTile)
         {
-            if (beta <= alpha || cnt > 1e6)
+            if (beta <= alpha || cnt > MAX_BRANCH_REACH)
                 return;
             ld dist = distEuclid(unit->curPos->center, tile->center);
             if (numSteps(dist) > unit->steps)
@@ -765,7 +808,7 @@ struct Game
 
         cnt = 0;
         random_shuffle(allMapTile.begin(), allMapTile.end());
-        cerr << minimax(2, -INF, INF, 1) << '\n';
+        cerr << minimax(TREE_DEPTH, -INF, INF, 1) << '\n';
 
         for (int i = 2; i < (int)allUnits.size(); i++)
         {
