@@ -229,7 +229,7 @@ struct Game
         }
     }
 
-    void drawUnits(Graphics& graphics)
+    void drawUnits(Graphics& graphics, bool showHp)
     {
         for (auto& unit : allUnits)
         {
@@ -239,6 +239,9 @@ struct Game
             float cenX = unit->curPos->center.first, cenY = unit->curPos->center.second;
             int sz = unit->name == "center" ? 64 : ON_MAP_TEXTURE_SIZE;
             graphics.renderTexture(unit->texture, cenX - sz / 2, cenY - sz / 2, sz, sz, graphics.renderer);
+
+            if (!showHp)
+                continue;
 
             //draw hp bar
             SDL_FRect hpBar;
@@ -269,10 +272,10 @@ struct Game
         }
     }
 
-    void draw(Graphics& graphics)
+    void draw(Graphics& graphics, bool showHp)
     {
         drawMap(graphics.renderer);
-        drawUnits(graphics);
+        drawUnits(graphics, showHp);
     }
 
     void drawPlayerTurn(Graphics& graphics)
@@ -280,7 +283,7 @@ struct Game
         string filePath = "assets/player_" + std::to_string(turn) + "_turn.png";
         SDL_Texture* texture = graphics.loadTexture(filePath.c_str());
         graphics.prepareScene();
-        draw(graphics);
+        draw(graphics, 1);
         graphics.renderTexture(texture, SCREEN_WIDTH / 2 - 445 / 2, SCREEN_HEIGHT / 2 - 220 / 2, 445, 219, graphics.renderer);
         graphics.presentScene();
 
@@ -348,7 +351,7 @@ struct Game
 
     void walkAnim(Unit* unit, MapTile* tile, Graphics& graphics)
     {
-        const int STEP = 15;
+        const int STEP = 20;
         int x = unit->curPos->center.first - ON_MAP_TEXTURE_SIZE / 2, y = unit->curPos->center.second - ON_MAP_TEXTURE_SIZE / 2;
         float endX = tile->center.first - ON_MAP_TEXTURE_SIZE / 2, endY = tile->center.second - ON_MAP_TEXTURE_SIZE / 2;
         int vx = x < endX ? 1 : -1, vy = y < endY ? 1 : -1;
@@ -362,7 +365,7 @@ struct Game
         {
             cerr << distx << ' ' << disty << '\n';
             graphics.prepareScene();
-            draw(graphics);
+            draw(graphics, 0);
             graphics.renderAnim(x, y, unit->walk, x > endX);
             graphics.presentScene();
 
@@ -397,7 +400,7 @@ struct Game
         do
         {
             graphics.prepareScene();
-            draw(graphics);
+            draw(graphics, 0);
             graphics.renderAnim(x, y, unit->atk, unit->curPos->center.first > tile->center.first);
             graphics.presentScene();
 
@@ -424,7 +427,7 @@ struct Game
         do
         {
             graphics.prepareScene();
-            draw(graphics);
+            draw(graphics, 0);
             graphics.renderAnim(x, y, unit->atk, unit->curPos->center.first > tile->center.first);
             graphics.presentScene();
 
@@ -638,7 +641,7 @@ struct Game
         while (1)
         {
             graphics.prepareScene();
-            draw(graphics);
+            draw(graphics, 1);
             graphics.presentScene();
 
             Unit* unit;

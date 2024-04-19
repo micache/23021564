@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1712972804 source:d:\cplusplus\game\main.cpp
+1713514275 source:d:\cplusplus\game\main.cpp
 	<iostream>
 	<SDL.h>
 	"graphics.h"
@@ -60,7 +60,7 @@
 	"defs.h"
 	"structs.h"
 
-1712972804 d:\cplusplus\game\graphics.h
+1713514275 d:\cplusplus\game\graphics.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
@@ -73,19 +73,20 @@
 	"utils.h"
 	"structs.h"
 
-1712976238 d:\cplusplus\game\defs.h
+1713514868 d:\cplusplus\game\defs.h
 	<tuple>
 	<string>
 
 1712136241 d:\cplusplus\game\input.h
 	<SDL.h>
 
-1712974142 d:\cplusplus\game\utils.h
+1713514275 d:\cplusplus\game\utils.h
 	<string>
+	<assert.h>
 	"defs.h"
 	"structs.h"
 
-1712977072 d:\cplusplus\game\logic.h
+1713515222 d:\cplusplus\game\logic.h
 	<vector>
 	<ctime>
 	<chrono>
@@ -100,7 +101,7 @@
 	"utils.h"
 	"input.h"
 
-1712902461 d:\cplusplus\game\structs.h
+1713514275 d:\cplusplus\game\structs.h
 	<SDL.h>
 	<SDL_image.h>
 	"defs.h"
