@@ -72,6 +72,7 @@ struct Unit
     bool player;
     Sprite *walk, *atk, *hit;
     SDL_Texture* texture = NULL;
+    bool showHp = 1;
 
     Unit (int id, MapTile* _curPos, bool side, Sprite* _walk, Sprite* _atk, Sprite* _hit)
     {

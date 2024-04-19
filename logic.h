@@ -229,7 +229,7 @@ struct Game
         }
     }
 
-    void drawUnits(Graphics& graphics, bool showHp)
+    void drawUnits(Graphics& graphics)
     {
         for (auto& unit : allUnits)
         {
@@ -240,7 +240,7 @@ struct Game
             int sz = unit->name == "center" ? 64 : ON_MAP_TEXTURE_SIZE;
             graphics.renderTexture(unit->texture, cenX - sz / 2, cenY - sz / 2, sz, sz, graphics.renderer);
 
-            if (!showHp)
+            if (!unit->showHp)
                 continue;
 
             //draw hp bar
@@ -272,10 +272,10 @@ struct Game
         }
     }
 
-    void draw(Graphics& graphics, bool showHp)
+    void draw(Graphics& graphics)
     {
         drawMap(graphics.renderer);
-        drawUnits(graphics, showHp);
+        drawUnits(graphics);
     }
 
     void drawPlayerTurn(Graphics& graphics)
@@ -283,7 +283,7 @@ struct Game
         string filePath = "assets/player_" + std::to_string(turn) + "_turn.png";
         SDL_Texture* texture = graphics.loadTexture(filePath.c_str());
         graphics.prepareScene();
-        draw(graphics, 1);
+        draw(graphics);
         graphics.renderTexture(texture, SCREEN_WIDTH / 2 - 445 / 2, SCREEN_HEIGHT / 2 - 220 / 2, 445, 219, graphics.renderer);
         graphics.presentScene();
 
@@ -361,11 +361,13 @@ struct Game
         graphics.play(walkSound);
 
         SDL_DestroyTexture(unit->texture);
+        //don't show hp bar
+        unit->showHp = 0;
         while (distx || disty)
         {
             cerr << distx << ' ' << disty << '\n';
             graphics.prepareScene();
-            draw(graphics, 0);
+            draw(graphics);
             graphics.renderAnim(x, y, unit->walk, x > endX);
             graphics.presentScene();
 
@@ -383,6 +385,7 @@ struct Game
             if (distx < STEP && disty < STEP)
                 break;
         }
+        unit->showHp = 1;
 
         Mix_FreeChunk(walkSound);
         unit->resetAnim();
@@ -400,13 +403,14 @@ struct Game
         do
         {
             graphics.prepareScene();
-            draw(graphics, 0);
+            draw(graphics);
             graphics.renderAnim(x, y, unit->atk, unit->curPos->center.first > tile->center.first);
             graphics.presentScene();
 
             unit->atk->tick();
         }
         while(unit->atk->currentFrame != 0);
+        SDL_Delay(100);
 
         Mix_FreeChunk(atkSound);
         unit->resetAnim();
@@ -427,13 +431,14 @@ struct Game
         do
         {
             graphics.prepareScene();
-            draw(graphics, 0);
+            draw(graphics);
             graphics.renderAnim(x, y, unit->atk, unit->curPos->center.first > tile->center.first);
             graphics.presentScene();
 
             unit->hit->tick();
         }
         while(unit->hit->currentFrame != 0);
+        SDL_Delay(100);
 
         Mix_FreeChunk(hitSound);
         unit->resetAnim();
@@ -641,7 +646,7 @@ struct Game
         while (1)
         {
             graphics.prepareScene();
-            draw(graphics, 1);
+            draw(graphics);
             graphics.presentScene();
 
             Unit* unit;
